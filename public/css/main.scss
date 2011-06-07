@@ -1,0 +1,410 @@
+/* 
+ * Colors declaration
+ */
+  
+$colorText: #444;
+$colorBold: #333;
+$colorLink: #72BBD2;
+$colorTitle: #212E3E;
+
+
+/* 
+ * CSS Reset  
+ */
+ 
+* { margin: 0; padding: 0; }
+
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td { 
+	margin:0;
+	padding:0;
+}
+table {
+	border-collapse:collapse;
+	border-spacing:0;
+}
+fieldset,img { 
+	border:0;
+}
+address,caption,cite,code,dfn,em,strong,th,var {
+	font-style:normal;
+	font-weight:normal;
+}
+ol,ul {
+	list-style:none;
+}
+caption,th {
+	text-align:left;
+}
+h1,h2,h3,h4,h5,h6 {
+	font-size:100%;
+	font-weight:normal;
+}
+q:before,q:after {
+	content:'';
+}
+abbr,acronym { border:0;
+}
+
+
+/*
+
+Sticky Footer by Ryan Fait
+http://ryanfait.com/
+http://ryanfait.com/resources/footer-stick-to-bottom-of-page/
+
+*/
+
+html, body {
+	height: 100%;
+}
+
+#wrapper {
+	text-align: left;
+	width: 940px;
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -46px; /* the bottom margin is the negative value of the footer's height */
+}
+
+
+#footer, #push {
+	height: 46px; /* .push must be the same height as .footer */
+}
+
+#footer {
+	width: 940px;
+	margin: 0 auto;
+}
+
+#content {
+	padding-bottom: 20px;
+	margin-bottom: 2em;
+} 
+
+/* end sticky footer */
+
+#logo {
+	float: left;
+}
+
+#logo a {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+#navigation {
+	float: right;
+	font-size: 13px;
+	font-weight: bold;
+	margin-top: 42px;
+}
+
+#navigation li {
+	display: inline;
+	vertical-align: baseline;
+}
+
+#navigation li a {
+	line-height: 30px;
+	text-decoration: none;
+	padding: 6px 16px;
+	line-height: 30px;
+	text-decoration: none;
+}
+
+#footer .separator {
+	border-top: 1px solid #DDD;
+	padding-bottom: 14px;
+}
+
+#footer .copy-note {
+	float: left;
+}
+
+#footer img {
+	vertical-align: middle;
+}
+
+#footer .fly-away {
+	float: right;
+	text-align: right;
+	width: 450px;
+}
+
+/* 
+ * Typography 
+ */
+ 
+@font-face {
+  font-family: 'Lobster';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Lobster'), url('http://themes.googleusercontent.com/font?kit=9LpJGtNuM1D8FAZ2BkJH2Q#') format('truetype');
+}
+
+@font-face {
+  font-family: 'Aclonica';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Aclonica'), local('Aclonica-Regular'), url('http://themes.googleusercontent.com/font?kit=VVH16EjBQLZ2NYB8eVnrO3YhjbSpvc47ee6xR_80Hnw') format('woff');
+}
+
+@font-face {
+  font-family: "Vera Mono";
+  src: url("fonts/VeraMono.ttf#") format("truetype");
+}
+
+#content,
+#dialog-content
+ {
+	font-family: 'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif;
+	color: $colorText;
+	font-size: 15px;
+	font-weight: normal;
+	line-height: 1.5;
+}
+
+#content b, #content strong {
+	color: $colorBold;
+	font-weight: 400;
+}
+
+#content em {
+	color: $colorLink;
+	font-style: normal;
+	font-weight: bold;
+}
+
+#content a {
+	color: $colorLink;
+	font-style: normal;
+	text-decoration: none;
+	border-bottom: 1px dotted $colorLink; 
+	outline: none;
+}
+
+
+#content p {
+	margin: auto auto 1.6em 0;
+}
+
+#content h1 {
+	font-size: 26px;
+	color: $colorTitle;
+	font-weight: 350;
+	margin-bottom: 1em;
+}
+
+#content h1 small {
+	display: block;
+	font-size: 20px;
+	font-weight: 100;
+	font-style:italic;
+	color: $colorLink;
+}
+
+#content h2 
+{
+	font-size: 21px;
+	color: $colorTitle;
+	margin-bottom: .6em;
+}
+
+#content h2 span
+ { 
+    background-color: white;
+	padding-right: .5em;
+}
+
+#content .box h2 span,
+#content fieldset h2 span
+{
+	background-color: #f9f9f9;
+}
+
+#content fieldset h2 {
+	margin-left: 2em;
+	margin-right: 2em;
+}
+
+#content h2 small {
+	display: block;
+	color: #999;
+	font-size: .6em;
+	font-style: italic;
+	font-weight: 300;
+	position: relative;
+	top: -4px;
+}
+
+
+#content h3 {
+  font-size: 18px;
+} 
+
+
+#content pre,
+#content code { 
+	font-family: "Vera Mono", courier new, courier-new, courier; 
+	font-weight: 100;
+	font-size: .88em;
+	color: $colorBold;
+}
+
+#content code { 
+	white-space: normal; 
+}
+
+#dialog-content h2 {
+	font-size: 1.4em;
+}
+
+
+
+/*
+ * CSS button
+ * see http://yayinternets.com/articles/emulating-google-style-buttons/ 
+ *     http://yayinternets.com/buttons.html
+ */
+ 
+#content  .button {
+  -moz-border-radius:      3px;
+  -webkit-border-radius:   3px;
+  background:              white url('../images/button.png') 0 0 repeat-x; /* Image fallback */
+  background:             -moz-linear-gradient(0% 170% 90deg, #c4c4c4, white);
+  background:             -webkit-gradient(linear, 0% 0%, 0% 170%, from(white), to(#c4c4c4));
+  border:                  1px solid;
+  border-color:            #e6e6e6 #cccccc #cccccc #e6e6e6;
+  border-radius:           3px;
+  color:                   #404040;
+  display:                 inline-block;
+  font-family:            "helvetica neue", helvetica, arial, freesans, "liberation sans", "numbus sans l", sans-serif;
+  font-size:               13px;
+  outline:                 0;
+  padding:                 5px 8px 5px;
+  text-align:              center;
+  text-decoration:         none;
+  text-shadow:             1px 1px 0 white; 
+  white-space:             nowrap; }
+
+#content  .button:hover {
+    background:           -moz-linear-gradient(0% 170% 90deg, #b8b8b8, white);
+    background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(white), to(#b8b8b8));
+    border-color:          #99ccff;
+    color:                 #333333; }
+
+
+#content  .button:active, .button:focus {
+    background-position:   0 -25px;
+    background:           -moz-linear-gradient(0% 170% 90deg, white, #dedede);
+    background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(#dedede), to(white));
+    border-color:          #8fc7ff #94c9ff #94c9ff #8fc7ff;
+    color:                 #1a1a1a;
+    text-shadow:           1px -1px 0 rgba(255, 255, 255, 0.5); } 
+    
+#content  .button.disabled {
+    background-position:   0 -25px;
+    background:           -moz-linear-gradient(0% 170% 90deg, white, #dedede);
+    background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(#dedede), to(white));
+    border-color:          #ccc #ccc #ccc #ccc;
+    color:                 #aaa;
+    text-shadow:           1px -1px 0 rgba(255, 255, 255, 0.5); } 
+
+/*
+ * Message boxs 
+ * http://www.jankoatwarpspeed.com/post/2008/05/22/CSS-Message-Boxes-for-different-message-types.aspx
+ */
+ 
+.box-info, .box-success, .box-warn, .box-error {
+border: 1px solid;
+margin: 10px 0px;
+padding:15px 10px 15px 50px;
+background-repeat: no-repeat;
+background-position: 10px 8px;
+}
+.box-info {
+color: #00529B;
+background-color: #BDE5F8;
+background-image: url('../images/box-info.png');
+}
+.box-success {
+color: #4F8A10;
+background-color: #DFF2BF;
+background-image:url('../images/box-success.png');
+}
+.box-warn {
+color: #9F6000;
+background-color: #FEEFB3;
+background-image: url('../images/box-warning.png');
+}
+.box-error {
+color: #D8000C;
+background-color: #FFBABA;
+background-image: url('../images/box-error.png');
+}
+ 
+
+
+/* 
+ * Skin decoration  
+ */
+ 
+body {
+	/* background: white url(../images/bg.gif) repeat-x 0% 0%; */
+	font-family: 'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif;
+	text-align: center;
+}
+
+#logo a {
+ font-family: 'Aclonica', serif;
+  font-size: 3.5em;
+  font-style: italic;
+  font-weight: 400;
+  text-shadow: 2px 2px 2px #aaa;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0em;
+  word-spacing: 0em;
+  line-height: 1.2;	
+  color: #333;
+  margin-top: 10px;
+}
+
+
+#header {
+ 	height: 90px;
+}
+
+#wrapper, #footer {
+
+}
+
+
+#footer {
+	color: #999;
+	font-size: 12px;
+	text-align: left;
+}
+
+#content {
+	padding-top: 40px; 
+}
+
+/*
+#content h2 
+{
+	background: transparent url(../images/bl.gif) repeat-x 0% bottom;
+}
+*/
+
+
+#footer a {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+
+
+

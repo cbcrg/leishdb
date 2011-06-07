@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+        <title>#{get '_app_title' /}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" type="text/css" media="screen" href="@{'/public/css/main.scss'}">
+        #{get 'moreStyles' /}
+        <link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
+        <script src="@{'/public/javascripts/jquery-1.4.2.min.js'}" type="text/javascript" charset="utf-8"></script>
+        #{get 'moreScripts' /}
+</head>
+
+<body >
+
+<div id="wrapper"> 
+	<div id="header">
+		<h1 id="logo"><a href="/">${_app_title}</a></h1> 
+		<span id="placeholder"></span>
+
+		<div id="navigation" >
+			<ul>
+			<!-- 
+			 <li class="index"><a href="index.html" ><span>Home</span></a></li>
+			 <li class="history"><a href="history.html"><span>History</span></a></li>
+			 <li class="tutorial"><a href="tutorial.html"><span>Tutorial</span></a></li>
+			 <li class="references"><a href="references.html"><span>References</span></a></li>
+			 <li class="contacts"><a href="contacts.html"><span>Contacts</span></a></li>
+			 -->
+			</ul>
+		</div>
+	</div> 
+
+	<div id="content" >
+	#{doLayout /}
+	</div>	
+
+	<div id="push"></div> 
+</div>
+
+<div id="footer"> 
+	<div class="separator" ></div>
+	<p class="copy-note" >
+	<img src="@{'/public/images/crg.png'}" height="18" width="18" alt="CRG logo"> ${_app_title} is hosted by the <a href="http://www.crg.es" target="_blank">Centre for Genomic Regulation</a> (CRG) of Barcelona 
+	</p>
+	<p class="fly-away">
+		<a href="#">Back to top</a>
+	</p>
+</div> 
+
+</body>
+</html>
