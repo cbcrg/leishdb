@@ -1,0 +1,325 @@
+@import url(reset.css);
+
+@font-face {
+  font-family: 'Aclonica';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Aclonica'), local('Aclonica-Regular'), url('http://themes.googleusercontent.com/font?kit=VVH16EjBQLZ2NYB8eVnrO3YhjbSpvc47ee6xR_80Hnw') format('woff');
+}
+
+$footerHeight: 40px;
+$footerPadding: 8px;
+$pushHeight: $footerHeight + $footerPadding * 2 +1px;  	
+
+/*
+ Use the sticky Footer technics by Ryan Fait
+ http://ryanfait.com/
+ http://ryanfait.com/resources/footer-stick-to-bottom-of-page/
+*/
+
+html {
+    overflow-y: scroll;
+}
+
+html, body {
+    color: #666;
+    font-family: 'Lucida Grande', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5em !important;
+    text-shadow: #fff 1px 1px 0px; 
+    height: 100%;
+}
+
+#push {
+	height: $pushHeight; /* .push must be the same height as .footer */
+}
+
+#main {
+	text-align: left;
+	width: 100%;
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto  (-$pushHeight); /* the bottom margin is the negative value of the footer's height */
+}
+
+
+h1, h2, h3, h4, h5 {
+    color: #333;
+}
+a {
+    color: #000;
+
+}
+a:hover {
+    text-decoration: none;
+}
+
+.wrapper {
+    width: 900px;
+    margin: auto;
+    position: relative; 
+}
+.wrapper:after {
+    content: " ";
+    display: block;
+    clear: both;
+}
+
+
+.wrapped {
+    width: 650px;
+}
+
+
+#logo a {
+  font-family: 'Aclonica', serif;
+  font-size: 3.5em;
+  font-style: italic;
+  font-weight: 400;
+  text-shadow: 1px 1px 2px #aaa;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0em;
+  word-spacing: 0em;
+  line-height: 1.2;	
+  color: #efefef;
+  padding-top: 1em;
+}
+
+
+
+/** FOOTER **/
+
+#footer {
+	height: $footerHeight; 
+    padding: $footerPadding;
+    background: #888787;
+    background: -webkit-gradient(linear, left bottom, right top, from(#888787), to(#666));
+    background: -moz-linear-gradient(left bottom, #888787, #666);
+    background: gradient(linear, left bottom, right top, from(#888787), to(#666));
+    font-size: 12px;
+    color: #eee;
+    -webkit-box-shadow: inset rgba(0,0,0,.1) 0 5px 5px;
+    -moz-box-shadow: inset rgba(0,0,0,.1) 0 5px 5px;
+    box-shadow: inset rgba(0,0,0,.1) 0 5px 5px;
+    border-top: 1px solid rgba(0,0,0,.2);
+    text-shadow: #555 -1px -1px 0px;
+}
+
+#footer a {
+    text-decoration: none;
+    color: #ccc;
+}
+#footer a:hover {
+    color: #fff;
+}
+
+#footer ul {
+    float: left;
+    width: 216px;
+    padding: 10px 0 20px;
+}
+
+#footer ul li {
+    margin-bottom: 3px;
+}
+
+#footer h5 {
+    margin-bottom: 5px;
+}
+#footer h5 a {
+    color: #fff;
+}
+
+#footer small {
+    display: block;
+    clear: both;
+    padding: 10px 0 0 0;
+    font-size: 11px;
+}
+
+#footer small a {
+    text-decoration: underline;
+}
+
+#footer .licence {
+    padding-top: 8px;
+}
+
+
+
+#footer hr {
+    clear: both;
+    border: none;
+    border-top: 1px solid #616060;
+    border-bottom: 1px solid #939393;
+    margin: 20px 0;
+}
+
+/** HEADER **/
+
+#header {
+    height: 70px;
+    background: #444;
+    background:  -webkit-gradient(linear, left top, left bottom, from(#555), to(#333));
+    background:  -moz-linear-gradient(top, #555, #333);
+    background:  gradient(linear, left top, left bottom, from(#555), to(#333));
+}
+
+
+#menu {
+    list-style: none;
+    position: absolute;
+    right: 0;
+    top: 12px;
+}
+
+#menu li {
+    float: left;
+    padding: 15px 15px;
+    position: relative;
+}
+
+#menu li:last-child {
+    padding-right: 0;
+}
+
+#menu span {
+    display: none;
+}
+
+#menu a {
+    color: #B3E862;
+    color: #999;
+    text-shadow: #000 -1px -1px 0px;
+    text-decoration: none;
+    font-size: 15px;
+}
+#menu a:hover {
+    color: #B3E862;
+    color: #ccc;
+}
+
+#menu .selected a {
+    color: #fff;
+}
+
+#menu .selected a:after {
+    content: " .";
+    display: block;
+    text-indent: -99em;
+    border-bottom: 0.8em solid #8adc92;
+    border-left: 0.8em solid transparent;
+    border-right: 0.8em solid transparent;
+    border-top: none;
+    height: 0px;
+    margin-left: -.8em;
+    margin-right: auto;
+    margin-top: 10px;
+    position: absolute;
+    left: 50%;
+    width: 1px;
+}
+
+#top {
+    background: #8adc92;
+    padding: 10px 0 0;
+    overflow: hidden;
+    zoom: 1;
+    margin-bottom: 20px;
+    background: -webkit-gradient(linear, left bottom, right top, from(#54D2CF), to(#605A9E));
+    background: -moz-linear-gradient(left bottom, #54D2CF, #605A9E);
+    background: gradient(linear, left bottom, right top, from(#54D2CF), to(#605A9E));
+    color: #1e4432;
+    text-shadow: rgba(255, 255, 255, 0.3) 1px 1px 0px;
+    border-bottom: 1px solid #bbb;
+    border-bottom: 1px solid rgba(0,0,0, 0.1);
+}
+
+#top p {
+    color: #1e4432;
+    color: rgba(30, 68, 50, 0.8);
+}
+
+#top .category {
+    font-weight: lighter;
+    font-size: 30px;
+    color: #1e4432;
+    line-height: 1.4em;
+    width: 900px;
+    margin: 0 auto 10px;
+    padding: 0;
+}
+
+#top .wrapper {
+    margin: 10px auto;
+}
+
+
+
+/** Form **/
+
+.classicForm label {
+    display: block;
+    color: #444;
+    font-size: 13px;
+}
+
+.classicForm input[type='text'] {
+    font-size: 14px;
+}
+
+.classicForm textarea {
+    font-size: 14px;
+    width: 100%;
+}
+
+.classicForm .help {
+    font-size: 11px;
+    color: #aaa;
+    display: block;
+}
+
+.classicForm .buttons {
+    background: #e0e0e0;
+    padding: 10px;
+}
+
+.classicForm .error {
+    color: #c00;
+    font-size: 13px;
+}
+
+
+/** Wikistyle */
+
+.wikistyle h1,.wikistyle h2,.wikistyle h3,.wikistyle h4,.wikistyle h5,.wikistyle h6{border:0;text-shadow: #fff 1px 1px 0px;}
+.wikistyle h1{font-size:170%;border-top:4px solid #aaa;padding-top:.5em;margin-top:1.5em;}
+.wikistyle h1:first-child{margin-top:0;padding-top:.25em;border-top:none;}
+.wikistyle h2{font-size:150%;margin-top:1.5em;border-top:4px solid #e0e0e0;padding-top:.5em;}
+.wikistyle h3{margin-top:1em;}
+.wikistyle p{margin:1em 0;line-height:1.5em;}
+.wikistyle ul{margin:1em 0 1em 2em; list-style: square; line-height: 24px;}
+.wikistyle ol{margin:1em 0 1em 2em; list-style-position: outside; list-style-type: decimal; line-height: 24px;}
+.wikistyle ul ul,.wikistyle ul ol,.wikistyle ol ol,.wikistyle ol ul{margin-top:0;margin-bottom:0;}
+.wikistyle blockquote{margin:1em 0;border-left:5px solid #ddd;padding-left:.6em;color:#666;}
+.wikistyle dt{font-weight:bold;margin-left:1em;}
+.wikistyle dd{margin-left:2em;margin-bottom:1em;}
+.wikistyle pre{margin:1em 0;font-size:90%;background-color:#f8f8ff;border-left:4px solid #e0e0e0;padding:.5em;line-height:1.5em;color:#444;overflow:auto;}
+.wikistyle pre code{display:block;padding:0;padding-left:10px;font-size:100%;background-color:#f8f8ff;border:none;}
+.wikistyle code{font-size:90%;background-color:#f8f8ff;color:#444;padding:0 .2em;border:1px solid #dedede;}
+.wikistyle pre.console{margin:1em 0;font-size:90%;background-color:black;padding:.5em;line-height:1.5em;color:white;}
+.wikistyle pre.console code{padding:0;font-size:100%;background-color:black;border:none;color:white;}
+.wikistyle pre.console span{color:#888;}
+.wikistyle pre.console span.command{color:yellow;}
+.wikistyle h1:after, .wikistyle h2:after, .wikistyle h3:after {content: '';}
+.wikistyle a{color: #444;}
+.wikistyle img {max-width: 642px; border:4px solid #e0e0e0;}
+.wikistyle p.note {background:#FFF9D8; padding: 10px;color:#333;border-left:6px solid #F3E378;}
+
+table.wikistyle  {margin:1em 0;width:650px;}
+table.wikistyle  th{border-bottom:1px solid #bbb;padding:.2em 1em;}
+table.wikistyle td{border-bottom:1px solid #ddd;padding:.2em 1em;}
+table.wikistyle td:first-child{padding-left:0;}
+table.wikistyle td:last-child{padding-right:0;}
