@@ -5,9 +5,10 @@
 <link rel="stylesheet" type="text/css" href="@{'/public/ext-4.0.1/resources/css/ext-all.css'}"/> 
 <style type="text/css">
 
+.x-toolbar-text, 
 .x-column-header, 
 .x-grid-cell {
-    font-size: 14px !important; 
+    font-size: 13px !important; 
 }
 
 #search-box { margin-bottom: 1em; } 
@@ -17,9 +18,47 @@
 
 #{set 'moreScripts'} 
 <script type="text/javascript" src="@{'/public/ext-4.0.1/bootstrap.js'}"></script> 
+<script type="text/javascript" src="@{'/public/javascripts/jquery-tmpl.min.js'}"></script> 
+<script type="text/javascript" src="@{'/public/javascripts/knockout-1.2.1.js'}"></script> 
 #{/set}
 
-<script type="text/javascript" >
+<div id="search-box">
+<label>Organism:</label><select id="organism" data-bind="options: availableOrganisms, value: organism, optionsCaption:'(all)'" ></select>
+<br>
+<label>DB Ref Type</label><select id="dbRefType" data-bind="options: availableDbRefType, value: dbRefType, optionsCaption:'(all)'"></select>
+<br><br>
+<button data-bind="click: filterData">Filter</button>
+</div> 
+
+
+<div id="the-grid">
+</div>
+
+
+<script type="text/javascript">
+
+/* 
+ * Filter model initialization 
+ */
+ var availableOrganisms = [
+		"Crithidia fasciculata",
+		"Homo sapiens",
+		"Leishmania braziliensis",
+		"Leishmania infantum",
+		"Leishmania major strain Friedlin",
+		"Leishmania mexicana",
+		"Leishmania tarentolae",
+		"Trypanosoma brucei TREU927",
+		"Trypanosoma cruzi strain CL Brener",
+		"Trypanosoma congolense",
+		"Trypanosoma vivax"
+	];
+
+var availableDbRefType = ["Pfam"];
+
+/*
+ * The grid initialization
+ */
 
 Ext.Loader.setConfig({enabled: true});
 
@@ -106,7 +145,7 @@ Ext.onReady(function(){
             sortable: true
         },
         {
-            text: "Protein",
+            text: "Function",
             dataIndex: 'protein',
             width: 250,
             sortable: true
@@ -132,6 +171,14 @@ Ext.onReady(function(){
         }
         
         ],
+
+        dockedItems: [{
+            xtype: 'pagingtoolbar',
+            store: store,   // same store GridPanel is using
+            dock: 'bottom',
+            displayInfo: true
+        }],        
+        
         renderTo: 'the-grid'
     });
 
@@ -142,43 +189,32 @@ Ext.onReady(function(){
     // trigger the data store load
     store.guaranteeRange(0, 199);
 
-	$('#search-btn').click( function() 
-			{
-				store.filter( 'organism', $("#organism").val() )	;
-				console.log('Filter clicked');
-			});
 
-	$('#organism').autocomplete(
-		{
-		minChars: 1, 
-	    delimiter: /(,|;)\s*/, // regex or character
-		lookup:[
-			"Crithidia fasciculata",
-			"Homo sapiens",
-			"Leishmania braziliensis",
-			"Leishmania infantum",
-			"Leishmania infantum",
-			"Leishmania major strain Friedlin",
-			"Leishmania mexicana",
-			"Trypanosoma brucei TREU927",
-			"Trypanosoma cruzi strain CL Brener",
-			"Trypanosoma congolense",
-			"Trypanosoma vivax"
-		]
-		
-		})
+    /* 
+     * Finalize the filter KO model
+     */
+    var filterModel = {
+    		organism: ko.observable(),
+    		dbRefType: ko.observable(),
+
+    		filterData: function() {
+		        var theFilters = [];
+				var obj = ko.toJS(filterModel);
+				for( var key in obj ) if(typeof(obj[key]) == 'string') { 
+					theFilters
+						.push(new Ext.util.Filter({property: key, value: obj[key]}))
+				} 
+
+				store.remoteFilter=false;
+				store.clearFilter(true);
+				store.remoteFilter=true;
+				store.filter(theFilters)
+    		} 
+    	};
+    		
+    ko.applyBindings(filterModel); // Makes Knockout get to work
+
     
 });
 
 </script>
-
-
-<div id="search-box">
-<label></label><input type="text" id="organism" name="organism" size="80"/>
-<button id="search-btn" class="button">Search</button>
-</div>
-
-<div id="the-grid">
-</div>
-
-<div id="total">Total entries: <em></em></div>

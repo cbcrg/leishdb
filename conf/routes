@@ -5,7 +5,9 @@
 # Home page
 GET     /                                       Application.index
 GET     /@layout                                Application.layout
-GET 	/{action}								Application.{action}
+GET 	/{action}.html							Application.{action}
+GET		/{action}.json							Application.{action}
+
 
 # Map static resources from the /app/public folder to the /public path
 GET     /public/                                staticDir:public

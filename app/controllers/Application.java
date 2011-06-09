@@ -2,8 +2,6 @@ package controllers;
 
 import static util.Dsl.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -15,13 +13,16 @@ import org.bson.types.ObjectId;
 import play.Logger;
 import play.mvc.Before;
 import play.mvc.Controller;
+import play.mvc.Util;
 import util.MongoHelper;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 public class Application extends Controller {
 
@@ -37,7 +38,7 @@ public class Application extends Controller {
 	
 	@Inject
 	static DB db;
-	
+
 	@Before
 	public static void before() { 
 		renderArgs.put("_app_title", "Leish DB");
@@ -48,13 +49,26 @@ public class Application extends Controller {
 	 * Render the project index page 
 	 */
     public static void index() {
-        
-    	List<String> collections = new ArrayList<String>(db.getCollectionNames());
-    	
-    	render(collections);
+    	render();
     }
     
+    /**
+     * Provide the table data to the showed in the index page
+     */
+    public static void indexData() { 
+    	DBCollection coll = db.getCollection("index_group");
+    	response.contentType = "application/x-json";
+    	renderText(JSON.serialize(coll.find()));
+    }
     
+    public static void description() { 
+    	render();
+    }
+
+    public static void contacts() { 
+    	render();
+    }
+ 
     /**
      * Just a sample page for testing purpose 
      */
@@ -97,7 +111,11 @@ public class Application extends Controller {
         String sortParam = request.params.get("sort");
         String startParam = request.params.get("start");
    	
-    	
+    	/*
+    	 * decode the filter 
+    	 */
+        DBObject filterBy = decodeFilter(filterParam);
+        
     	DBCollection coll = db.getCollection("leishdata");
     	if( coll == null ) { 
     		error("Missing collection 'leishdata'");
@@ -109,12 +127,12 @@ public class Application extends Controller {
     	/* 
     	 * count the total documents in the collections 
     	 */
-    	long total = coll.count();
+    	long total = coll.count(filterBy);
     	
     	/* 
     	 * get the 'general' cursor 
     	 */
-    	DBCursor cursor = coll.find();
+    	DBCursor cursor = coll.find(filterBy);
     	
     	/* 
     	 * check if a sorting is defined 
@@ -131,7 +149,6 @@ public class Application extends Controller {
     	}
 
 		Logger.debug("Data Start: %s; Limit: %s; %s ", skip, limit, (orderBy != null ? "Sort by: "+orderBy : ""));
-		Logger.debug("Data Filter: %s", filterParam);
 
 		/* 
 		 * impose 'skip' and 'limit' to the cursor
@@ -183,7 +200,37 @@ public class Application extends Controller {
     	}
     } 
      
+    @Util
+    static DBObject decodeFilter( String filterString ) { 
+        if( StringUtils.isEmpty(filterString) ) {
+        	return null;
+        }
+    	
+        DBObject result = new BasicDBObject();
+		Logger.debug("Data Filter: %s", filterString);
+		BasicDBList filters = (BasicDBList) JSON.parse(filterString);
+		for( int i=0; i<filters.size(); i++ ) { 
+			DBObject item = (DBObject) filters.get(i);
+			String property = (String) item.get("property");
+			/*
+			 * decode the UI properties to the real document property 
+			 */
+			if( "dbRefType".equals(property) ) {
+				property = "dbReference.type";
+			}
+			else if( "organism".equals(property) ) { 
+				property = "organism.name.value";
+			}
+			else { 
+				Logger.warn("Unknown filter property: %s", property);
+			}
+			
+			result.put(property, item.get("value"));
+		}
 
+		
+		return result;
+    }
         
     
 }

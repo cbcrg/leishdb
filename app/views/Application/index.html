@@ -1,7 +1,56 @@
 #{extends 'main.html' /}
 #{set _app_title:'Home' /}
 
+#{set 'moreScripts'} 
+<script type="text/javascript" src="@{'/public/javascripts/jquery-tmpl.min.js'}"></script> 
+<script type="text/javascript" src="@{'/public/javascripts/knockout-1.2.1.debug.js'}"></script> 
+#{/set}
 
-#{list collections}
-<li>${_}</li>
-#{/list}
+
+<h1>Welcome to Leishdrug DB project</h1>
+
+<table class="wikistyle">
+<thead>
+<tr>
+<th>Species</th>
+<th>Proteins</th>
+<th>Psites</th>
+<th>Leish Psites</th>
+<th>Version</th>
+</tr>
+</thead>
+
+<tbody data-bind="template: 'indexTableBody'">
+</tbody>
+</table>
+
+<div>
+All known annotation have been extracted from <a href="http://www.uniprot.org/news/2011/05/03/release" target="_blank">UniProt Release 2011_05</a>
+</div>
+
+<script type="text/html" id="indexTableBody">
+{{each entry}}
+<tr>
+<td>{{= _id }}</td>
+<td>{{= value }}</td>
+<td>x</td>
+<td>y</td>
+<td>1.0</td>
+</tr>
+{{/each}}
+</script>
+
+<script type="text/javascript">
+//The view model is an abstract description of the state of the UI, but without any knowledge of the UI technology (HTML)
+var viewModel = {
+    entry: ko.observableArray([])
+};
+ 
+ko.applyBindings(viewModel);
+
+$.getJSON("@{application.indexData()}", function(data) { 
+	//console.dir(data);
+	viewModel.entry(data)
+})
+
+</script>
