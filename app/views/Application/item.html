@@ -1,5 +1,174 @@
-#{extends 'main.html' /}
-#{set _app_title:'Entry details' /}
+*{<!-- 	
+See for reference http://yensdesign.com/tutorials/tabs/ 
+ -->}*
+<link rel="stylesheet" type="text/css" media="screen" href="@{'/public/css/tab.css'}">
 
-<h1><span>Entry</span></h1>
+<div id="tabbed-box"> 
+	<ul class="tab-choice"> 
+	    <li id="names" class="active">Names and origin</li> 
+	    <li id="attributes">Protein attributes</li> 
+	    <li id="annotations">Annotations</li> 
+	    <li id="sequence">Sequence</li> 
+	    <li id="info">Entry information</li> 
+	</ul> 
+	<span class="tab-clear"></span> 
+	
 
+<div class="names tab-content tab-display"> 
+<dl> 
+	<dt>Protein names</dt>   
+	<dd>
+	#{list entry?.protein?.submittedName}${_?.fullName?.value} <br>#{/list}
+	</dd> </dl>
+	
+<dl> 
+	<dt>Gene names</dt>   
+	<dd>
+	#{list entry?.gene}
+	#{list _?.name} ${_?.type}: ${_?.value}  <br>
+	#{/list}
+	#{/list}
+	</dd> </dl>
+
+<dl> 
+	<dt>Organism</dt>   
+	<dd>
+	#{list entry?.organism?.name}
+	${_?.type}: ${_?.value} <br>
+	#{/list}
+	
+	</dd> </dl>
+	
+<dl> 
+	<dt>Taxonomic identifier</dt>   
+	<dd>
+	#{list entry?.organism?.dbReference} ${_?.id} [${_?.type}] <br> #{/list}
+	</dd> </dl>
+
+<dl> 
+	<dt>Taxonomic lineage</dt>   
+	<dd>
+	#{list entry?.organism?.lineage?.taxon} ${_} #{if !_isLast}&rsaquo; #{/if} #{/list}
+	</dd> </dl>
+
+</div>
+
+<div class="attributes tab-content tab-no-display"> 
+
+<dl> 
+	<dt>Sequence length</dt>   
+	<dd>${entry?.sequence?.length} AA.</dd> </dl>
+		
+<dl> 
+	<dt>Protein existence</dt>   
+	<dd>${entry?.proteinExistence?.type}</dd> </dl>
+</div>	
+
+<div class="annotations tab-content tab-no-display"> 
+#{if entry?.feature || features }
+
+#{if entry?.feature}
+<table class="feature wikistyle">
+<thead>
+<tr>
+<th>Feature key</th>	<th>Position(s)</th>	<th>Length</th>	<th>Description</th>	<th>Feature identifier</th>
+</tr>
+</thead>
+<tbody>
+#{list entry?.feature}
+%{ def len = 1 }%
+<tr>
+	<td>${_?.type}</td>
+	<td align="right">
+	#{if _?.location?.begin && _?.location?.end}
+	   %{ len = _?.location?.end?.position - _?.location?.begin.position +1  }%
+	   ${_?.location?.begin.position} -  ${_?.location?.end.position}
+	#{/if}
+	#{elseif _?.location?.position}
+	   ${_?.location?.position?.position}
+	#{/elseif}
+	</td>	
+	<td align="right">${len}</td>
+	<td>${_?.description}</td>
+	<td>	
+	${_?.id}
+	</td>
+</tr>
+#{/list}
+</tbody>
+</table>
+#{/if}
+
+#{if features}
+<table class="feature wikistyle">
+<thead>
+<tr>
+<th>Type</th><th>Position(s)</th> <th>Peptide</th> <th>Repeat</th> <th>Stage</th>
+</tr>
+</thead>
+<tbody>
+#{list features}
+<tr>
+	<td>${_?.get('type')}</td>
+	<td align="right"> ${_?.get('posabs')} </td>	
+	<td> <pre>${_?.get('peptide')}</pre> </td>
+	<td align="right">${_?.get('repeat')}</td>
+	<td>${_?.get('stage')}</td>
+</tr>
+#{/list}
+</tbody>
+</table>
+#{/if}
+#{/if}
+</div>
+
+<div class="sequence tab-content tab-no-display"> 
+<pre>
+${entry?.sequence?.value?.seqfmt()}
+</pre>
+</div>
+
+<div class="info tab-content tab-no-display"> 
+	
+<dl> 
+	<dt>Entry name</dt>   
+	<dd>
+	#{list entry?.name} ${_} <br> #{/list}
+	</dd> </dl>
+		
+<dl> 
+	<dt>Accession</dt>   
+	<dd>
+	#{list entry?.accession} ${_} <br> #{/list}
+	</dd> </dl>
+		
+<dl> 
+	<dt>Integrated into UniProtKB/Swiss-Prot</dt>   
+	<dd>${entry?.created ?.format()}</dd> </dl>
+		
+<dl> 
+	<dt>Last sequence update</dt>   
+	<dd>${entry?.sequence?.modified?.format()}</dd> </dl>
+	
+<dl> 
+	<dt>Last modified</dt>   
+	<dd>${entry?.modified?.format()}</dd> </dl>	
+</div>	
+	
+</div>
+
+<script type="text/javascript" >
+$(".tab-choice > li").click(function(e){
+	var selected = e.target.id;
+	// hide all tab choices and make active the selected one 
+	$(".tab-choice > li").removeClass("active");
+	$(".tab-choice #"+selected).addClass("active");
+
+	//display selected division, hide others
+	$(".tab-content").css("display", "none");
+	$(".tab-content."+selected).show();
+
+	return false;
+});
+
+</script> 

@@ -1,0 +1,64 @@
+
+#{extends 'main.html' /}
+#{set _app_title:'Home' /}
+
+<link rel="stylesheet" type="text/css" media="screen" href="@{'/public/css/tab.css'}">
+<script type="text/javascript" src="http://jqueryjs.googlecode.com/files/jquery-1.2.6.min.js"></script> 
+
+	
+<div id="tabbed-box"> 
+	<ul class="tab-choice"> 
+		<li id="news" class="active">News</li> 
+		<li id="tutorials">Tutorials</li> 
+		<li id="links">Links</li> 
+	</ul> 
+	<span class="tab-clear"></span> 
+	
+	<div class="news tab-content tab-display"> 
+		<h1>Latest News</h1> 
+		<ul> 
+			<li> Boobles: First theme on Themeforest released!</li> 
+			<li> Cokidoo becomes official</li> 
+			<li> plusmusica.com private beta invitations</li> 
+			<li> yensdesign.com 2.0 launched!</li> 
+		<ul> 
+	</div> 
+	<div class="tutorials tab-content tab-no-display"> 
+		<h1>Latest Tutorials</h1> 
+		<ul> 
+			<li> Top 10 free fonts for professional design</li> 
+			<li> Create an amazing music player using mouse gestures & hotkeys</li> 
+			<li> Boobles: First theme on Themeforest released!</li> 
+			<li> Creating AJAX websites based on anchor navigation</li> 
+			<li> Fast Tip: Create your personal blog to promote your self</li> 
+			<li> How to make a brilliant mysql forum database from scratch</li> 
+		<ul> 
+	</div> 
+	<div class="links tab-content tab-no-display"> 
+		<h1>You may visit</h1> 
+		<ul> 
+			<li> <a href="http://www.plusmusica.com">www.plusmusica.com</a> - Online jukebox!</li> 
+			<li> <a href="http://www.cokidoo.com">www.cokidoo.com</a> - Awesome startup! :)</li> 
+			<li> <a href="http://www.cokidoo.com">www.pixelartgames.com</a> - Do you want pixel art games? ;)</li> 
+			<li> <a href="http://www.dmsconsulting.es">www.dmsconsulting.es</a> - Great guys</li> 
+		<ul> 
+	</div> 
+</div> 
+
+
+<script type="text/javascript" >
+$(document).ready(function(){
+	$(".tab-choice > li").click(function(e){
+		var selected = e.target.id;
+		// hide all tab choices and make active the selected one 
+		$(".tab-choice > li").removeClass("active");
+		$(".tab-choice #"+selected).addClass("active");
+
+		//display selected division, hide others
+		$(".tab-content").css("display", "none");
+		$(".tab-content."+selected).show();
+
+		return false;
+	});
+});
+</script> 

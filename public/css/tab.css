@@ -1,0 +1,98 @@
+/** Reset */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em,
+font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody,
+ tfoot, thead, tr, th, td {
+	border:0pt none;
+	margin:0pt;
+	padding:0pt;
+	vertical-align:baseline;
+}
+
+html,body{
+	height:100%;
+	text-align: center;
+}
+
+.tab-clear{
+	clear: both;
+	height: 0;
+	visibility: hidden;
+	display: block;
+}
+
+/** Tab Selection */
+
+#tabbed-box {
+	margin: .7em;
+}
+
+#tabbed-box ul{
+	list-style: none;
+	list-style-position: outside;
+}
+
+#tabbed-box ul.tab-choice li{
+	float: left;
+	margin-right: 5px;
+	margin-bottom: -1px;
+}
+
+#tabbed-box ul.tab-choice li{
+	font-weight: 700;
+	display: block;
+	padding: 5px 10px 5px 10px;
+	background: #efefef;
+	margin-bottom: -1px;
+	border: 1px solid #d0ccc9;
+	border-width: 1px 1px 1px 1px;
+	position: relative;
+	color: #898989;
+	cursor: pointer;
+}
+
+#tabbed-box ul.tab-choice li.active{
+	background: #fff;
+	top: 1px;
+	border-bottom: 0;
+	color: #5C85B0;
+}
+
+
+/** Tab Content */
+
+.tab-content{
+	margin: 0pt auto;
+	background: #efefef;
+	background: #fff;
+	border: 1px solid #d0ccc9;
+	text-align: left;
+	padding: 10px;
+	padding-bottom: 20px;
+}
+.tab-content h1{
+	line-height: 1em;
+	vertical-align: middle;
+	height: 48px;
+	padding: 10px 10px 10px 52px;
+}
+
+
+.tab-display {
+	display: block;
+}
+
+.tab-no-display {
+	display: none;
+}
+
+/** misc */
+
+.tab-content dt{
+	font-weight:bold;
+	margin-left:1em;
+}
+.tab-content dd{
+	margin-left:2em;
+	margin-bottom:1em;
+}
+

@@ -1,0 +1,7 @@
+{
+ "total": ${total},
+ "species": 
+    [ 
+ 	#{each species}{"name": "${_.get('_id')?.escapeJavaScript()}", "count": ${_.get('value')?.format('0')}}#{if !_isLast},#{/if} #{/each}  
+ 	] 
+}

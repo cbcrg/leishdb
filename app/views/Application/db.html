@@ -1,0 +1,431 @@
+#{extends 'main.html' /}
+#{set _app_title:'Database' /}
+
+#{set 'moreStyles' }
+<link rel="stylesheet" type="text/css" href="@{'/public/ext-4.0.2/resources/css/ext-all-gray.css'}"/> 
+<style type="text/css">
+.x-toolbar-text, 
+.x-column-header, 
+.x-grid-cell {
+    font-size: 13px !important; 
+}
+
+.x-window-body-default {
+	color: #3A3A3A !important;
+	background-color: white !important;
+    overflow-y: auto;
+    
+    font-family: 'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif;
+	color: #444;
+	font-size: 15px;
+	font-weight: normal;
+	line-height: 1.5;
+} 
+
+.x-window-body-default dt{font-weight:bold;margin-left:1em;}
+.x-window-body-default dd{margin-left:2em;margin-bottom:1em;}
+
+.x-window-body-default pre { margin-left:1em } 
+
+
+#filter-box { margin-bottom: 1em; } 
+#the-grid { margin-bottom: 1em; } 
+</style>
+#{/set}
+
+#{set 'moreScripts'} 
+<script type="text/javascript" src="@{'/public/ext-4.0.2/bootstrap.js'}"></script> 
+#{/set}
+
+<div id="search-wrapper">
+<div id="filter-box"></div> 
+</div>
+
+
+<div id="the-grid">
+</div>
+
+<div id="info">
+Found <em id="label-total"></em> record(s)
+</div>
+
+<script type="text/javascript">
+
+Ext.Loader.setConfig({enabled: true});
+
+Ext.require([
+    'Ext.grid.*',
+    'Ext.data.*',
+    'Ext.util.*',
+    'Ext.form.field.ComboBox',
+    'Ext.form.FieldSet',
+    'Ext.grid.PagingScroller',
+    'Ext.selection.CheckboxModel'
+]);
+
+Ext.onReady(function(){
+
+	/** Create stores required by the filter componenets */
+    var speciesStore = Ext.create('Ext.data.Store', {
+    	autoLoad: true,
+        fields: [ 'name', 'count' ],
+        proxy: {
+            type: 'ajax',
+	        noCache: false,
+            url: '@{Data.species()}',
+            reader: {
+                root: 'species',
+                totalProperty: 'total'
+            }
+        }
+    });    
+
+    var dbTypesStore = Ext.create('Ext.data.Store', {
+    	autoLoad: true,
+        fields: ['name'],
+        proxy: {
+            type: 'ajax',
+            noCache: false,
+            url: '@{Data.dbtypes()}',
+            reader: {
+                root: 'dbtypes',
+                totalProperty: 'total'
+            }
+        }
+    });    
+
+
+    var fTypesStore = Ext.create('Ext.data.Store', {
+    	autoLoad: true,
+        fields: ['name'],
+        proxy: {
+            type: 'ajax',
+            noCache: false,
+            url: '@{Data.featureTypes()}',
+            reader: {
+                root: 'items',
+                totalProperty: 'total'
+            }
+        }
+    }); 
+
+
+    var fDescriptionsStore = Ext.create('Ext.data.Store', {
+    	autoLoad: true,
+        fields: ['name'],
+        proxy: {
+            type: 'ajax',
+            noCache: false,
+            url: '@{Data.featureDescriptions()}',
+            reader: {
+                root: 'items',
+                totalProperty: 'total'
+            }
+        }
+    });    
+       
+	/** Create filter components */
+	var align = 'top';
+	
+	var speciesCombo = Ext.create('Ext.form.field.ComboBox', {
+        fieldLabel: 'Specie(s)',
+        displayField: 'name',
+        width: 500,
+        labelWidth: 130,
+        labelAlign: align,
+        store: speciesStore,
+        queryMode: 'local',
+        typeAhead: true,
+        multiSelect: true,
+        forceSelection: true
+    });
+
+/*    speciesCombo.on('beforequery', function(event, options ) 
+    	{
+    	  if( !event.combo.multiSelect ) return;
+
+    	  var items = event.query.split(event.combo.delimiter)
+		  event.query = (items!=null && items.length>0) ? items[items.length-1] : "";
+	    })
+	*/
+	
+	var dbTypesCombo = Ext.create('Ext.form.field.ComboBox', {
+        fieldLabel: 'DB type',
+        displayField: 'name',
+        labelWidth: 130,
+        labelAlign: align,
+        store: dbTypesStore,
+        queryMode: 'local',
+        typeAhead: true,
+        style: { marginRight: '14px' } 
+    });
+
+
+	var dbIdField = Ext.create('Ext.form.field.Text', {
+        fieldLabel: 'DB Id',
+        labelAlign: align
+    });
+	
+	var fTypesCombo = Ext.create('Ext.form.field.ComboBox', {
+        fieldLabel: 'Feature type',
+        displayField: 'name',
+        width: 500,
+        labelWidth: 130,
+        labelAlign: align,
+        store: fTypesStore,
+        queryMode: 'local'
+    });	
+
+
+	var fDescriptionsCombo = Ext.create('Ext.form.field.ComboBox', {
+        fieldLabel: 'Feature description',
+        displayField: 'name',
+        width: 500,
+        labelWidth: 130,
+        labelAlign: align,
+        store: fDescriptionsStore,
+        queryMode: 'local'
+    });	
+
+	var fSearchButton = Ext.create('Ext.Button', {
+	    text: 'Filter Data',
+	    height: 24,
+	    style: { marginLeft: '20px', marginTop: '18px' } 
+	});
+	
+	// explicitly create a Container
+	Ext.create('Ext.container.Container', {
+	    layout: {
+	        type: 'vbox'
+	    },
+	    width: 878,
+	    height: 250,
+	    renderTo: 'filter-box',
+	    defaults: {
+	        labelWidth: 80,
+	        flex: 1,
+	        style: { padding: '8px' }
+	    },
+	    items: [ 
+	        speciesCombo, 
+	        { 
+				xtype: 'container',
+				layout: 'hbox',
+				width: '100%',
+			    items: [ dbTypesCombo, dbIdField ] 
+			} , 
+		    fTypesCombo, 
+	        { 
+				xtype: 'container',
+				layout: 'hbox',
+				width: '100%',
+			    items: [ fDescriptionsCombo, fSearchButton ] 
+			} 
+		     
+		]
+	});
+
+
+    Ext.select('#filter-box').each(function(el) {
+        Ext.create('Ext.form.FieldSet', {
+            contentEl: el,
+            renderTo: el.parent(),
+            title: 'View filter options',
+            collapsible: true,
+            collapsed: true
+        })
+    });
+
+	
+	
+	fTypesCombo.on('change', function(field){
+		console.log('fTypesCombo  Change')
+		fDescriptionsCombo.setValue(null);
+		fDescriptionsStore.load({params: { 'type': field.getValue() }} );
+	  })
+	
+	/** The grid control */
+	
+	Ext.define('LeishData', {
+        extend: 'Ext.data.Model',
+        fields: [
+			'_id', 'accession', 'name', 'protein', 'gene', 'organism', 'length'
+        ],
+        idProperty: '_id'
+    });
+
+    // create the Data Store
+    var store = Ext.create('Ext.data.Store', {
+        id: 'store',
+        pageSize: 200,
+        model: 'LeishData',
+        remoteSort: true,
+        remoteFilter: true,
+        buffered: true,
+        proxy: {
+            // load using script tags for cross domain, if the data in on the same domain as
+            // this page, an HttpProxy would be better
+            type: 'ajax',
+            url: '@{Data.db()}',
+            reader: {
+                root: 'entries',
+                totalProperty: 'total'
+            },
+            // sends single sort as multi parameter
+            simpleSortMode: true
+        }
+    });
+
+	store.on("load", function( thisStore, records, successful, operation ) 
+		{
+			$('#label-total').text( store.getTotalCount() ); 
+		});
+
+
+	
+/*    function renderTopic(value, p, record) {
+        return Ext.String.format(
+            '<a href="http://sencha.com/forum/showthread.php?t={2}" target="_blank">{0}</a>',
+            value,
+            record.data.forumtitle,
+            record.getId(),
+            record.data.forumid
+        );
+    }
+*/
+
+/*
+	var sm = Ext.create('Ext.selection.CheckboxModel');
+	sm.on("select", function(row, record, index, options) 
+		{
+			console.group("select");
+			console.info("Sel: " + record.data._id);
+			console.groupEnd()
+		});
+
+	sm.on("selectionchange", function(model, array, options) 
+			{
+				console.group("selectionchange");
+				console.info("Sel: " + array);
+				console.groupEnd()
+			});
+		
+	sm.on("deselect", function(row, record, index, options) 
+			{
+				console.group("deselect");
+				console.info("Des: " + record.data._id);
+				console.groupEnd()
+			});
+
+*/	
+    var grid = Ext.create('Ext.grid.Panel', {
+        width: 900,
+        height: 500,
+        store: store,
+        //selModel: sm,
+        verticalScrollerType: 'paginggridscroller',
+        loadMask: true,
+        disableSelection: false,
+        invalidateScrollerOnRefresh: false,
+        viewConfig: {
+            trackOver: false
+        },
+        // grid columns
+        columns:[
+		{
+            text: "Accession",
+            dataIndex: 'accession',
+            width: 70,
+            sortable: true
+        },
+        {
+            text: "Name",
+            dataIndex: 'name',
+            width: 130,
+            sortable: true
+        },
+        {
+            text: "Function",
+            dataIndex: 'protein',
+            width: 250,
+            sortable: true
+        },
+        {
+            text: "Gene",
+            dataIndex: 'gene',
+            width: 100,
+            sortable: true
+        },
+        {
+            text: "Organism",
+            dataIndex: 'organism',
+            width: 230,
+            sortable: true
+        },
+        {
+            text: "Length",
+            dataIndex: 'length',
+            width: 60,
+            align: 'right',
+            sortable: true
+        }
+        
+        ],
+
+        dockedItems: [{
+            xtype: 'pagingtoolbar',
+            store: store,   // same store GridPanel is using
+            dock: 'bottom',
+            displayInfo: true,
+            autoScroll : true
+        }],        
+        
+        renderTo: 'the-grid'
+    });
+
+	grid.on('itemdblclick', function(grid, record, item, index, event) 
+		{ 
+			Ext.create('Ext.window.Window', 
+			{
+			    title: 'Entry Details',
+			    height: '90%',
+			    width: '90%',
+			    layout: 'fit',
+			    bodyPadding: 10,
+		        loader: {
+		        	autoLoad: true,
+		        	renderer: 'html',
+		        	scripts: true,
+	            	url: '@{Application.item()}?id=' + item.viewRecordId
+	        	}
+			}).show();
+		});
+
+	fSearchButton.on('click', function() 
+		{
+		    var values = {};
+		    values['organism.name.value'] = speciesCombo.getValue();
+		    values['dbReference.type'] = dbTypesCombo.getValue();
+		    values['dbReference.id'] = dbIdField.getValue();
+		    values['feature.type'] = fTypesCombo.getValue();
+		    values['feature.description'] = fDescriptionsCombo.getValue();
+
+	        var theFilters = [];
+			for( var key in values ) if( values[key]!=null )  { 
+				theFilters
+					.push(new Ext.util.Filter({property: key, value: values[key]}))
+			} 
+
+			store.remoteFilter=false;
+			store.clearFilter(true);
+			store.remoteFilter=true;
+			store.filter(theFilters)		
+		});
+	
+    // trigger the data store load
+    store.guaranteeRange(0, 199);
+
+    
+});
+
+</script>

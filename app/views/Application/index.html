@@ -31,11 +31,11 @@ All known annotation have been extracted from <a href="http://www.uniprot.org/ne
 <script type="text/html" id="indexTableBody">
 {{each entry}}
 <tr>
-<td>{{= _id }}</td>
-<td>{{= value }}</td>
-<td>x</td>
-<td>y</td>
-<td>1.0</td>
+<td>{{= name }}</td>
+<td align='right'>{{= count }}</td>
+<td align='right'>x</td>
+<td align='right'>y</td>
+<td align='right'>1.0</td>
 </tr>
 {{/each}}
 </script>
@@ -48,9 +48,9 @@ var viewModel = {
  
 ko.applyBindings(viewModel);
 
-$.getJSON("@{application.indexData()}", function(data) { 
+$.getJSON("@{Data.species('minCount':10)}", function(data) { 
 	//console.dir(data);
-	viewModel.entry(data)
+	viewModel.entry(data.species)
 })
 
 </script>

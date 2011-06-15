@@ -1,44 +1,40 @@
 package controllers;
 
-import static util.Dsl.*;
-
-import java.util.Map;
+import java.lang.reflect.Type;
+import java.util.Iterator;
 
 import javax.inject.Inject;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.bson.types.ObjectId;
+import org.uniprot.uniprot.Entry;
+import org.uniprot.uniprot.GeneNameType;
 
-import play.Logger;
+import play.CorePlugin;
 import play.mvc.Before;
 import play.mvc.Controller;
-import play.mvc.Util;
-import util.MongoHelper;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 
 public class Application extends Controller {
 
-	
-	static final Map<String,String> mapping = 	
-			map( entry("accession","accession"),
-				 entry("name", "name"),
-				 entry("protein", "protein.submittedName.fullName.value"),
-				 entry("gene","gene.name.value"),
-				 entry("organism","organism.name.value"),
-				 entry("length", "sequence.length")
-				 );
-	
 	@Inject
-	static DB db;
-
+	static DB db;	
+	
+	
 	@Before
 	public static void before() { 
 		renderArgs.put("_app_title", "Leish DB");
@@ -51,15 +47,7 @@ public class Application extends Controller {
     public static void index() {
     	render();
     }
-    
-    /**
-     * Provide the table data to the showed in the index page
-     */
-    public static void indexData() { 
-    	DBCollection coll = db.getCollection("index_group");
-    	response.contentType = "application/x-json";
-    	renderText(JSON.serialize(coll.find()));
-    }
+
     
     public static void description() { 
     	render();
@@ -76,161 +64,94 @@ public class Application extends Controller {
     	render();
     }
 
-    public static void query() { 
+    public static void db() { 
     	render();
     }
     
     /**
      * Render the page contains details data for the selected item 
      */
-    public static void item() { 
-    	render();
+    public static void item(String id) { 
+    	DBCollection data = db.getCollection("leishdata");
+    	DBObject obj = data.findOne( new BasicDBObject("_id", new ObjectId(id)));
+    	GsonBuilder builder = new GsonBuilder();
+    	builder.registerTypeAdapter(XMLGregorianCalendar.class, new XMLGregorianCalendarDeserializer());
+    	Gson gson = builder.create();
+    	Entry entry = gson.fromJson( obj.toString(), Entry.class);
+
+    	/*
+    	 * extract all 'gene.name.value' from the unitprot entry 
+    	 */
+    	BasicDBList refs = new BasicDBList();
+    	Iterator<Entry.Gene> geneIt = entry != null && entry.getGene() != null ? entry.getGene().iterator() : null;
+    	Iterator<GeneNameType> nameIt;
+    	while( geneIt != null && geneIt.hasNext()  ) { 
+    		Entry.Gene gene = geneIt.next();
+    		nameIt = gene!=null && gene.getName() != null ? gene.getName().iterator() : null;
+    		while( nameIt != null && (nameIt).hasNext() ) { 
+    			GeneNameType name = nameIt.next();
+    			refs.add( name.getValue() );
+    		}
+    	}
+    	
+    	/*
+    	 * lookup all leishdrub features for the found 'refid'
+    	 */
+    	DBCursor features=null;
+    	if( refs.size()>0 ) { 
+        	DBCollection leish = db.getCollection("leishcoll");
+        	DBObject filter = new BasicDBObject("refid", new BasicDBObject("$in", refs));
+        	features = leish.find(filter);
+    	}
+
+    	render(entry, features);
     }   
     
+    
     /**
-     * The main 'data' extraction method. The following HTTP parameters are supported 
-     * <li>start: the record index number from which start the visualization</li>
-     * <li>limit</li>
-     * <li>dir</li>
-     * <li>sort</li>
-     * <li>filter</li>
-     * <li>group</li>
-     * <li>page</li>
+     * Deserializer for date time object 
      * 
+     * @author Paolo Di Tommaso
+     *
      */
-    public static void data() {
+    
+    static class XMLGregorianCalendarDeserializer implements JsonDeserializer<XMLGregorianCalendar> {
 
-    	final String callback = request.params.get("callback");
-    	final boolean jsonp = StringUtils.isNotEmpty(callback);
-
-        String directionParam = request.params.get("dir");
-        String filterParam = request.params.get("filter");
-        String groupParam = request.params.get("group");
-        String limitParam = request.params.get("limit");
-        String pageParam = request.params.get("page");
-        String sortParam = request.params.get("sort");
-        String startParam = request.params.get("start");
-   	
-    	/*
-    	 * decode the filter 
-    	 */
-        DBObject filterBy = decodeFilter(filterParam);
-        
-    	DBCollection coll = db.getCollection("leishdata");
-    	if( coll == null ) { 
-    		error("Missing collection 'leishdata'");
+    	static DatatypeFactory factory;
+    	
+    	static { 
+    		try {
+				factory =  DatatypeFactory.newInstance();
+			} catch (DatatypeConfigurationException e) {
+				throw new RuntimeException(e);
+			}
     	}
     	
-    	int skip = NumberUtils.toInt(startParam);
-    	int limit = NumberUtils.toInt(limitParam, 200);
-    	
-    	/* 
-    	 * count the total documents in the collections 
-    	 */
-    	long total = coll.count(filterBy);
-    	
-    	/* 
-    	 * get the 'general' cursor 
-    	 */
-    	DBCursor cursor = coll.find(filterBy);
-    	
-    	/* 
-    	 * check if a sorting is defined 
-    	 */
-    	DBObject orderBy = null;
-    	if( StringUtils.isNotEmpty(sortParam) ) { 
-    		sortParam = mapping.get(sortParam);
-    	}
-    	if( StringUtils.isNotEmpty(sortParam) ) { 
-    		orderBy = new BasicDBObject();
-    		int direction = "DESC".equals(directionParam.toUpperCase()) ? -1 : 1;
-    		orderBy.put(sortParam, direction);
-        	cursor.sort(orderBy);
-    	}
-
-		Logger.debug("Data Start: %s; Limit: %s; %s ", skip, limit, (orderBy != null ? "Sort by: "+orderBy : ""));
-
-		/* 
-		 * impose 'skip' and 'limit' to the cursor
-		 */
-    	cursor.skip(skip).limit(limit);
-    	
-    	/*
-    	 * create the JSON result data
-    	 */
-    	StringBuffer result = new StringBuffer();
-    	
-    	result.append("{");
-    	result.append("\"total\":") .append( total ) .append(", ");
-    	
-    	result.append("\"entries\":");
-    	
-    	result.append("[");
-    	int i=0;
-		DBObject target = new BasicDBObject();
-    	while( cursor.hasNext() ) { 
-    		// fetch the next document 
-    		DBObject item = cursor.next();
+    	public XMLGregorianCalendar deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
     		
-    		// add a comma to json result after the first record 
-    		if( i++ > 0 ) { result.append(","); }
+    		int year = json.getAsJsonObject().get("year").getAsInt();
+    		int month = json.getAsJsonObject().get("month").getAsInt();
+    		int day = json.getAsJsonObject().get("day").getAsInt();
+    		int timezone = json.getAsJsonObject().get("timezone").getAsInt();
+    		int hour = json.getAsJsonObject().get("hour").getAsInt();
+    		int minute = json.getAsJsonObject().get("minute").getAsInt();
+    		int second = json.getAsJsonObject().get("second").getAsInt();
 
-    		// extract the document id
-    		target.put("_id", ((ObjectId)item.get("_id")).toString() );
-        	
-    		// remap the document to plain representation for table presentation
-        	for( java.util.Map.Entry<String, String> map : mapping.entrySet() ) { 
-        		target.put( map.getKey(), MongoHelper.select(item, map.getValue()) );
-        	}
-		
-    		result.append( target.toString() );
-    	}
-    	result.append("]}");
-    	
-    	/* 
-    	 * render back the JSON result 
-    	 */
-    	if( jsonp ) { 
-        	response.contentType = "text/javascript";
-        	renderText( callback + "(" + result.toString() + ")");
-    	}
-    	else { 
-        	response.contentType = "application/x-json";
-        	renderText(result.toString());
-    	}
-    } 
-     
-    @Util
-    static DBObject decodeFilter( String filterString ) { 
-        if( StringUtils.isEmpty(filterString) ) {
-        	return null;
-        }
-    	
-        DBObject result = new BasicDBObject();
-		Logger.debug("Data Filter: %s", filterString);
-		BasicDBList filters = (BasicDBList) JSON.parse(filterString);
-		for( int i=0; i<filters.size(); i++ ) { 
-			DBObject item = (DBObject) filters.get(i);
-			String property = (String) item.get("property");
-			/*
-			 * decode the UI properties to the real document property 
-			 */
-			if( "dbRefType".equals(property) ) {
-				property = "dbReference.type";
-			}
-			else if( "organism".equals(property) ) { 
-				property = "organism.name.value";
-			}
-			else { 
-				Logger.warn("Unknown filter property: %s", property);
-			}
-			
-			result.put(property, item.get("value"));
-		}
+    		return factory.newXMLGregorianCalendar(year, month, day, hour, minute, second, 0, timezone);
+    	  }
 
-		
-		return result;
     }
-        
+    
+	/**
+	 * Renders a page containing Play! runtime informantion 
+	 */
+	public static void playinfo() {
+		String info = CorePlugin.computeApplicationStatus(false);
+		render(info);
+	} 
+	
+	public static void tab() { 
+		render();
+	}
     
 }

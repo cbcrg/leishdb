@@ -1,0 +1,292 @@
+package controllers;
+
+import static util.Dsl.*;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.bson.types.ObjectId;
+
+import play.Logger;
+import play.cache.CacheFor;
+import play.mvc.Before;
+import play.mvc.Controller;
+import play.mvc.Http.Request;
+import play.mvc.Util;
+import util.MongoHelper;
+
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+
+/**
+ * Expose JSON data provider for database and filter controls 
+ * 
+ * @author Paolo Di Tommaso
+ *
+ */
+public class Data extends Controller {
+
+	static final Map<String,String> mapping = 	
+		map( entry("accession","accession"),
+			 entry("name", "name"),
+			 entry("protein", "protein.submittedName.fullName.value"),
+			 entry("gene","gene.name.value"),
+			 entry("organism","organism.name.value"),
+			 entry("length", "sequence.length")
+			 );
+
+
+	@Inject
+	static DB db;
+
+	
+	@Before
+	static void before() { 
+		request.format = "json";
+		response.contentType = "application/x-json";
+	}
+	
+    /**
+     * The main 'data' extraction method. The following HTTP parameters are supported 
+     * <li>start: the record index number from which start the visualization</li>
+     * <li>limit</li>
+     * <li>dir</li>
+     * <li>sort</li>
+     * <li>filter</li>
+     * <li>group</li>
+     * <li>page</li>
+     * 
+     */
+    public static void db() {
+
+    	final String callback = request.params.get("callback");
+    	final boolean jsonp = StringUtils.isNotEmpty(callback);
+
+        String directionParam = request.params.get("dir");
+        String filterParam = request.params.get("filter");
+        String groupParam = request.params.get("group");
+        String limitParam = request.params.get("limit");
+        String pageParam = request.params.get("page");
+        String sortParam = request.params.get("sort");
+        String startParam = request.params.get("start");
+
+    	DBCollection coll = db.getCollection("leishdata");
+    	if( coll == null ) { 
+    		error("Missing collection 'leishdata'");
+    	}
+    	
+    	int skip = NumberUtils.toInt(startParam);
+    	int limit = NumberUtils.toInt(limitParam, 200);
+
+        DBObject filterBy = decodeFilter(filterParam);
+        Logger.debug("Data filter: %s", filterBy);
+    	
+    	/* 
+    	 * get the 'general' cursor 
+    	 */
+    	DBCursor cursor = coll.find(filterBy);
+    	// count the total documents in the collections 
+    	long total = cursor.count();
+   	
+    	/* 
+    	 * check if a sorting is defined 
+    	 */
+    	DBObject orderBy = null;
+    	if( StringUtils.isNotEmpty(sortParam) ) { 
+    		sortParam = mapping.get(sortParam);
+    	}
+    	if( StringUtils.isNotEmpty(sortParam) ) { 
+    		orderBy = new BasicDBObject();
+    		int direction = "DESC".equals(directionParam.toUpperCase()) ? -1 : 1;
+    		orderBy.put(sortParam, direction);
+        	cursor.sort(orderBy);
+    	}
+
+		Logger.debug("Data Start: %s; Limit: %s; %s ", skip, limit, (orderBy != null ? "Sort by: "+orderBy : ""));
+
+		/* 
+		 * impose 'skip' and 'limit' to the cursor
+		 */
+    	cursor.skip(skip).limit(limit);
+    	
+    	/*
+    	 * create the JSON result data
+    	 */
+    	StringBuffer result = new StringBuffer();
+    	
+    	result.append("{");
+    	result.append("\"total\":") .append( total ) .append(", ");
+    	
+    	result.append("\"entries\":");
+    	
+    	result.append("[");
+    	int i=0;
+		DBObject target = new BasicDBObject();
+    	while( cursor.hasNext() ) { 
+    		// fetch the next document 
+    		DBObject item = cursor.next();
+    		
+    		// add a comma to json result after the first record 
+    		if( i++ > 0 ) { result.append(","); }
+
+    		// extract the document id
+    		target.put("_id", ((ObjectId)item.get("_id")).toString() );
+        	
+    		// remap the document to plain representation for table presentation
+        	for( java.util.Map.Entry<String, String> map : mapping.entrySet() ) { 
+        		target.put( map.getKey(), MongoHelper.select(item, map.getValue()) );
+        	}
+		
+    		result.append( target.toString() );
+    	}
+    	result.append("]}");
+    	
+    	/* 
+    	 * render back the JSON result 
+    	 */
+    	if( jsonp ) { 
+        	response.contentType = "text/javascript";
+        	renderText( callback + "(" + result.toString() + ")");
+    	}
+    	else { 
+        	response.contentType = "application/x-json";
+        	renderText(result.toString());
+    	}
+    } 
+    
+    @Util
+    static void addFilter(DBObject filterBy, Request request, String key) {
+    	if( StringUtils.isNotEmpty(request.params.get(key))) { 
+        	filterBy.put(key, request.params.get(key));
+        }
+	}
+
+	@Util
+    static DBObject decodeFilter( String filterString ) { 
+        if( StringUtils.isEmpty(filterString) ) {
+        	return null;
+        }
+    	
+        DBObject result = new BasicDBObject();
+		Logger.debug("Data Filter: %s", filterString);
+		BasicDBList filters = (BasicDBList) JSON.parse(filterString);
+		for( int i=0; i<filters.size(); i++ ) { 
+			DBObject item = (DBObject) filters.get(i);
+			String key = (String) item.get("property");
+			
+			
+			Object value = item.get("value");
+			if( value instanceof BasicDBList ) {
+				if( !((BasicDBList)value).isEmpty() ) { 
+	 				result.put(key, new BasicDBObject("$in", value));
+				}
+			}
+			else if( value != null && StringUtils.isNotEmpty(value.toString())) { 
+				result.put(key, value);
+			}
+		}
+
+		
+		return result;
+    }
+        
+    
+    
+    /**
+     * Provide the table data to the showed in the index page
+     */
+    public static void species(Integer minCount) { 
+    	
+    	DBCollection coll = db.getCollection("leish_species");
+    
+    	DBObject filterBy = null;
+    	if( minCount != null ) { 
+    		filterBy = new BasicDBObject();
+    		filterBy .put("value", new BasicDBObject("$gt", minCount-1));
+    	}
+    	
+    	DBCursor species = coll.find(filterBy);
+    	long total = species.count();
+    	render(total, species);
+    }   
+    
+    @CacheFor("5min")
+    public static void dbTypes() { 
+
+    	DBCollection coll = db.getCollection("leishdata");
+    	List result = coll.distinct("dbReference.type");
+    	Collections.sort(result);
+    	long total = result.size();
+    	
+    	render(total, result);
+    }
+
+    @CacheFor("5min")
+    public static void featureTypes() { 
+
+    	DBCollection coll = db.getCollection("leishdata");
+    	List result = coll.distinct("feature.type");
+    	Collections.sort(result);
+    	long total = result.size();
+    	
+    	render(total, result);
+    }
+
+//    @CacheFor("5min")
+    public static void featureDescriptions(String type) { 
+    	Logger.info("FeatureDescription: %s", type);
+    	
+    	String sFilter = params.get("filter");
+        
+    	DBObject filterBy = null;
+    	if( StringUtils.isNotEmpty(type)) { 
+    		filterBy = new BasicDBObject();
+    		filterBy .put("feature.type", type);
+    	}  	
+    	else if( StringUtils.isNotEmpty(sFilter) ) { 
+    		filterBy = decodeFilter(sFilter);
+    	}
+    	
+    	DBCollection coll = db.getCollection("leishdata");
+    	List result = coll.distinct("feature.description", filterBy);
+    	Collections.sort(result);
+    	long total = result.size();
+    	
+    	render(total, result);
+    }
+   
+        
+    public static void item(String id) { 
+    	DBCollection data = db.getCollection("leishdata");
+    	DBObject obj = data.findOne( new BasicDBObject("_id", new ObjectId(id)));
+    	renderText(obj.toString());
+    }
+    
+
+    /**
+     * Download selected sequences in CSV format 
+     */
+    public static void downloadCsv() { 
+    	
+    }
+    
+    /**
+     * Download the selected sequences in FASTA format
+     */
+    public static void downloadFasta() { 
+    	
+    }
+    
+    
+
+}

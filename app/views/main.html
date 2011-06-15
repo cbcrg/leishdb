@@ -3,6 +3,7 @@
 <head>
         <title>#{get '_app_title' /}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        #{get 'preStyles' /}
         <link rel="stylesheet" type="text/css" media="screen" href="@{'/public/css/main.scss'}">
         #{get 'moreStyles' /}
         <link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
@@ -24,7 +25,7 @@
                 <a href="@{Application.description()}">Learn</a><span>&gt;</span> 
             </li> 
             <li> 
-                <a href="@{Application.query()}">Database</a><span>&gt;</span> 
+                <a href="@{Application.db()}">Database</a><span>&gt;</span> 
             </li> 
             <li> 
                 <a href="@{Application.contacts()}">Contacts</a><span>&gt;</span> 

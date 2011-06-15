@@ -1,0 +1,4 @@
+{
+ "total": ${total},
+ "items": [#{each result} {"name":"${_.escapeJavaScript()}"}#{if !_isLast},#{/if} #{/each}] 
+}
