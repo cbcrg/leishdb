@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Static helper to create collections. 
@@ -37,6 +38,15 @@ public class Dsl {
         return result;
     }
 
+    public static <K, V> Map<K, V> treemap(Entry<? extends K, ? extends V>... entries) {
+        Map<K, V> result = new TreeMap<K, V>();
+
+        for (Entry<? extends K, ? extends V> entry : entries)
+            if (entry.value != null)
+                result.put(entry.key, entry.value);
+
+        return result;
+    }    
     public static <K, V> Entry<K, V> entry(K key, V value) {
         return new Entry<K, V>(key, value);
     }

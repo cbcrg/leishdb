@@ -46,10 +46,21 @@
 </div>
 
 <div id="info">
-Found <em id="label-total"></em> record(s)
+Displaying <em id="label-from">0</em> - <em id="label-to">0</em> of <em id="label-total">0</em> entrie(s). 
 </div>
 
-<script type="text/javascript">
+<div id="download">
+Download the displayed dataset in <a id="downloadCsv" href="javascript:void(0)">CSV format</a> or <a id="downloadFasta" href="javascript:void(0)" >FASTA format</a>
+</div>
+
+<!-- Fields required for history management --> 
+ <form id="history-form" class="x-hide-display"> 
+     <input type="hidden" id="x-history-field" /> 
+     <iframe id="x-history-frame"></iframe> 
+ </form> 
+    
+    
+<script type="text/javascript"><!--
 
 Ext.Loader.setConfig({enabled: true});
 
@@ -276,23 +287,16 @@ Ext.onReady(function(){
         }
     });
 
-	store.on("load", function( thisStore, records, successful, operation ) 
+	store.on("load", function( thisStore, records, successful, operation, options ) 
 		{
-			$('#label-total').text( store.getTotalCount() ); 
+			//console.info(store.first().index + " - " + store.last().index + "; page: " + store.getPageFromRecordIndex(store.first().index) )
+			$('#label-from').text( Ext.util.Format.number(store.first().index+1, "0,0")); 
+			$('#label-to').text( Ext.util.Format.number(store.last().index+1, "0,0")); 
+			$('#label-total').text( Ext.util.Format.number(store.getTotalCount(), "0,0")); 
 		});
 
-
 	
-/*    function renderTopic(value, p, record) {
-        return Ext.String.format(
-            '<a href="http://sencha.com/forum/showthread.php?t={2}" target="_blank">{0}</a>',
-            value,
-            record.data.forumtitle,
-            record.getId(),
-            record.data.forumid
-        );
-    }
-*/
+
 
 /*
 	var sm = Ext.create('Ext.selection.CheckboxModel');
@@ -333,6 +337,11 @@ Ext.onReady(function(){
         // grid columns
         columns:[
 		{
+		    xtype: 'rownumberer',
+		    width: 50,
+		    sortable: false
+		},            
+		{
             text: "Accession",
             dataIndex: 'accession',
             width: 70,
@@ -347,7 +356,7 @@ Ext.onReady(function(){
         {
             text: "Function",
             dataIndex: 'protein',
-            width: 250,
+            width: 230,
             sortable: true
         },
         {
@@ -359,7 +368,7 @@ Ext.onReady(function(){
         {
             text: "Organism",
             dataIndex: 'organism',
-            width: 230,
+            width: 220,
             sortable: true
         },
         {
@@ -371,14 +380,6 @@ Ext.onReady(function(){
         }
         
         ],
-
-        dockedItems: [{
-            xtype: 'pagingtoolbar',
-            store: store,   // same store GridPanel is using
-            dock: 'bottom',
-            displayInfo: true,
-            autoScroll : true
-        }],        
         
         renderTo: 'the-grid'
     });
@@ -420,12 +421,27 @@ Ext.onReady(function(){
 			store.clearFilter(true);
 			store.remoteFilter=true;
 			store.filter(theFilters)		
+
 		});
 	
     // trigger the data store load
     store.guaranteeRange(0, 199);
 
-    
+
+    //Ext.History.init();
+
+    $("#downloadCsv").click(
+   		function() {
+   	   		console.dir(store.filters.items)
+			window.open('@{Data.downloadCsv()}', '_blank')
+    	}) 
+
+    $("#downloadFasta").click(
+           		function() {
+           	   		console.dir(store.filters.items)
+        			window.open('@{Data.downloadFasta()}', '_blank')
+            	}) 
+    	
 });
 
-</script>
+--></script>

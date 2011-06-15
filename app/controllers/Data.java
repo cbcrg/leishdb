@@ -13,12 +13,15 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.bson.types.ObjectId;
 
 import play.Logger;
+import play.cache.Cache;
 import play.cache.CacheFor;
 import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Http.Request;
+import play.mvc.Scope.Session;
 import play.mvc.Util;
 import util.MongoHelper;
+import util.ServerExtensions;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -37,7 +40,7 @@ import com.mongodb.util.JSON;
 public class Data extends Controller {
 
 	static final Map<String,String> mapping = 	
-		map( entry("accession","accession"),
+		treemap( entry("accession","accession"),
 			 entry("name", "name"),
 			 entry("protein", "protein.submittedName.fullName.value"),
 			 entry("gene","gene.name.value"),
@@ -50,7 +53,7 @@ public class Data extends Controller {
 	static DB db;
 
 	
-	@Before
+	@Before(unless={"downloadCsv", "downloadFasta"})
 	static void before() { 
 		request.format = "json";
 		response.contentType = "application/x-json";
@@ -90,7 +93,9 @@ public class Data extends Controller {
 
         DBObject filterBy = decodeFilter(filterParam);
         Logger.debug("Data filter: %s", filterBy);
-    	
+        
+        cacheFilter( filterBy );
+        
     	/* 
     	 * get the 'general' cursor 
     	 */
@@ -164,7 +169,22 @@ public class Data extends Controller {
     	}
     } 
     
-    @Util
+    private static void cacheFilter(DBObject filterBy) {
+    	final String key = "data_filter_" + Session.current().getId();
+    	if( filterBy == null ) { 
+    		Cache.delete(key);
+    	}
+    	else { 
+    		Cache.set(key, filterBy);
+    	}
+	}
+    
+    private static DBObject cachedFilter( ) { 
+    	final String key = "data_filter_" + Session.current().getId();
+    	return (DBObject) Cache.get(key);
+    }
+
+	@Util
     static void addFilter(DBObject filterBy, Request request, String key) {
     	if( StringUtils.isNotEmpty(request.params.get(key))) { 
         	filterBy.put(key, request.params.get(key));
@@ -278,14 +298,85 @@ public class Data extends Controller {
      * Download selected sequences in CSV format 
      */
     public static void downloadCsv() { 
+    	DBCollection data = db.getCollection("leishdata");
+    	DBCursor cursor = data.find(cachedFilter());
     	
+    	response.contentType = "text/csv";
+		response.setHeader("Content-Disposition", "attachment; filename=\"leishdb.csv\"");
+    	
+    	StringBuilder chunck = new StringBuilder();
+
+    	//* write the header 
+    	long c=0;
+    	for( java.util.Map.Entry<String, String> map : mapping.entrySet() ) { 
+    		if( c++> 0 ) chunck.append(",");
+    		chunck.append( map.getKey() );
+    	}
+    	chunck.append("\n");
+    	
+    	// Append the data 
+    	c=0;
+        while( cursor.hasNext() ) {
+        	DBObject item = cursor.next();
+        	
+        	int colCount=0;
+        	for( java.util.Map.Entry<String, String> map : mapping.entrySet() ) { 
+        		if( colCount++>0 ) chunck.append(",");
+        		Object value = MongoHelper.select(item, map.getValue()) ;
+        		chunck.append( value != null ? value.toString() : "" );
+        	}
+        	chunck.append("\n");
+    	
+
+        	if( ++c % 5000 == 0 ) { 
+        		response.writeChunk(chunck.toString());
+        		chunck = new StringBuilder();
+        	}
+        }  	
+
+        // write out the remaing part 
+        if( chunck.length()>0 ) { 
+            response.writeChunk(chunck);
+        }
+
     }
     
     /**
      * Download the selected sequences in FASTA format
      */
     public static void downloadFasta() { 
+    
+       	DBCollection data = db.getCollection("leishdata");
+    	DBCursor cursor = data.find(cachedFilter());
     	
+    	response.contentType = "text/csv";
+		response.setHeader("Content-Disposition", "attachment; filename=\"leishdb.fa\"");
+    	
+    	StringBuilder chunck = new StringBuilder();
+
+    	// Append the data 
+    	long c=0;
+        while( cursor.hasNext() ) {
+        	DBObject item = cursor.next();
+        	
+        	chunck.append(">") .append(MongoHelper.select(item, "accession") );
+        	chunck.append("\n");
+        	
+        	String seq = MongoHelper.select(item, "sequence.value");
+        	chunck.append( ServerExtensions.seqfmt(seq, 1, 60) );
+        	chunck.append("\n");
+
+        	if( ++c % 5000 == 0 ) { 
+        		response.writeChunk(chunck.toString());
+        		chunck = new StringBuilder();
+        	}
+        }  	
+
+        // write out the remaing part 
+        if( chunck.length()>0 ) { 
+            response.writeChunk(chunck);
+        }
+   	
     }
     
     

@@ -8,6 +8,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.uniprot.uniprot.Entry;
 import org.uniprot.uniprot.GeneNameType;
@@ -15,6 +16,7 @@ import org.uniprot.uniprot.GeneNameType;
 import play.CorePlugin;
 import play.mvc.Before;
 import play.mvc.Controller;
+import play.mvc.Util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -68,12 +70,33 @@ public class Application extends Controller {
     	render();
     }
     
+    public static void entry() {  
+    	lookupItem();
+    }
+    
     /**
      * Render the page contains details data for the selected item 
      */
-    public static void item(String id) { 
+    public static void item() { 
+    	lookupItem();
+    }   
+
+    @Util
+    static void lookupItem() { 
     	DBCollection data = db.getCollection("leishdata");
-    	DBObject obj = data.findOne( new BasicDBObject("_id", new ObjectId(id)));
+    	
+    	DBObject where=null;
+    	if( StringUtils.isNotEmpty(params.get("id")) ) { 
+    		where = new BasicDBObject("_id", new ObjectId(params.get("id")));
+    	}
+    	else if(StringUtils.isNotEmpty(params.get("accession"))) { 
+    		where = new BasicDBObject("accession", params.get("accession"));
+    	}
+    	else if(StringUtils.isNotEmpty(params.get("name"))) { 
+    		where = new BasicDBObject("name", params.get("name"));
+    	}
+    	
+    	DBObject obj = data.findOne(where);
     	GsonBuilder builder = new GsonBuilder();
     	builder.registerTypeAdapter(XMLGregorianCalendar.class, new XMLGregorianCalendarDeserializer());
     	Gson gson = builder.create();
@@ -104,9 +127,8 @@ public class Application extends Controller {
         	features = leish.find(filter);
     	}
 
-    	render(entry, features);
-    }   
-    
+    	render(entry, features);  	
+    }
     
     /**
      * Deserializer for date time object 
@@ -151,6 +173,10 @@ public class Application extends Controller {
 	} 
 	
 	public static void tab() { 
+		render();
+	}
+	
+	public static void test() { 
 		render();
 	}
     
