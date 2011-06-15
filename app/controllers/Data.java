@@ -205,6 +205,7 @@ public class Data extends Controller {
     /**
      * Provide the table data to the showed in the index page
      */
+    @CacheFor("5min")
     public static void species(Integer minCount) { 
     	
     	DBCollection coll = db.getCollection("leish_species");
@@ -242,7 +243,7 @@ public class Data extends Controller {
     	render(total, result);
     }
 
-//    @CacheFor("5min")
+    @CacheFor("5min")
     public static void featureDescriptions(String type) { 
     	Logger.info("FeatureDescription: %s", type);
     	
