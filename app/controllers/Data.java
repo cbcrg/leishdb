@@ -39,6 +39,8 @@ import com.mongodb.util.JSON;
  */
 public class Data extends Controller {
 
+	static int MAX_CHUNK_CAPACITY = 500 * 1024;
+	
 	static final Map<String,String> mapping = 	
 		treemap( entry("accession","accession"),
 			 entry("name", "name"),
@@ -302,41 +304,43 @@ public class Data extends Controller {
     	DBCursor cursor = data.find(cachedFilter());
     	
     	response.contentType = "text/csv";
+    	response.setHeader("Transfer-Encoding", "chunked");
 		response.setHeader("Content-Disposition", "attachment; filename=\"leishdb.csv\"");
     	
-    	StringBuilder chunck = new StringBuilder();
+    	StringBuilder chunk = new StringBuilder(50 * 1024);
 
     	//* write the header 
     	long c=0;
     	for( java.util.Map.Entry<String, String> map : mapping.entrySet() ) { 
-    		if( c++> 0 ) chunck.append(",");
-    		chunck.append( map.getKey() );
+    		if( c++> 0 ) chunk.append(",");
+    		chunk.append( map.getKey() );
     	}
-    	chunck.append("\n");
+    	chunk.append("\n");
     	
     	// Append the data 
-    	c=0;
         while( cursor.hasNext() ) {
         	DBObject item = cursor.next();
         	
-        	int colCount=0;
+        	c=0;
         	for( java.util.Map.Entry<String, String> map : mapping.entrySet() ) { 
-        		if( colCount++>0 ) chunck.append(",");
+        		if( c++>0 ) chunk.append(",");
         		Object value = MongoHelper.select(item, map.getValue()) ;
-        		chunck.append( value != null ? value.toString() : "" );
+        		chunk.append( value != null ? value.toString() : "" );
         	}
-        	chunck.append("\n");
+        	chunk.append("\n");
     	
 
-        	if( ++c % 5000 == 0 ) { 
-        		response.writeChunk(chunck.toString());
-        		chunck = new StringBuilder();
+        	
+        	if( chunk.capacity() > MAX_CHUNK_CAPACITY  ) { 
+        		response.writeChunk(chunk.toString());
+        		chunk = new StringBuilder();
+        		return;
         	}
         }  	
 
         // write out the remaing part 
-        if( chunck.length()>0 ) { 
-            response.writeChunk(chunck);
+        if( chunk.length()>0 ) { 
+            response.writeChunk(chunk);
         }
 
     }
@@ -350,31 +354,31 @@ public class Data extends Controller {
     	DBCursor cursor = data.find(cachedFilter());
     	
     	response.contentType = "text/csv";
+    	response.setHeader("Transfer-Encoding", "chunked");
 		response.setHeader("Content-Disposition", "attachment; filename=\"leishdb.fa\"");
     	
-    	StringBuilder chunck = new StringBuilder();
+    	StringBuilder chunk = new StringBuilder(50 * 1024);
 
     	// Append the data 
-    	long c=0;
         while( cursor.hasNext() ) {
         	DBObject item = cursor.next();
         	
-        	chunck.append(">") .append(MongoHelper.select(item, "accession") );
-        	chunck.append("\n");
+        	chunk.append(">") .append(MongoHelper.select(item, "accession") );
+        	chunk.append("\n");
         	
         	String seq = MongoHelper.select(item, "sequence.value");
-        	chunck.append( ServerExtensions.seqfmt(seq, 1, 60) );
-        	chunck.append("\n");
+        	chunk.append( ServerExtensions.seqfmt(seq, 1, 60) );
+        	chunk.append("\n");
 
-        	if( ++c % 5000 == 0 ) { 
-        		response.writeChunk(chunck.toString());
-        		chunck = new StringBuilder();
+        	if( chunk.capacity() > MAX_CHUNK_CAPACITY) { 
+        		response.writeChunk(chunk.toString());
+        		chunk = new StringBuilder();
         	}
         }  	
 
         // write out the remaing part 
-        if( chunck.length()>0 ) { 
-            response.writeChunk(chunck);
+        if( chunk.length()>0 ) { 
+            response.writeChunk(chunk);
         }
    	
     }
