@@ -17,6 +17,7 @@ import play.CorePlugin;
 import play.cache.CacheFor;
 import play.mvc.Before;
 import play.mvc.Controller;
+import play.mvc.Finally;
 import play.mvc.Util;
 
 import com.google.gson.Gson;
@@ -38,10 +39,9 @@ public class Application extends Controller {
 	static DB db;	
 	
 	
-	@Before
-	public static void before() { 
-
-	}
+	@Before static void mongoBegin() {  db.requestStart(); }
+	
+	@Finally static void mongoDone() {  db.requestDone(); }
 	
 	
 	/**
