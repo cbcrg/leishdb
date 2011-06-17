@@ -417,9 +417,15 @@ public class Data extends Controller {
     		regex.put("$options","i");
     		DBObject ref = new BasicDBObject("value", regex);
         	DBCursor cursor = index.find(ref, view);
+        	int c=0;
         	while( cursor.hasNext() ) { 
         		item = cursor.next();
         		data.add(item);
+        		if( c++ > 100 ) { 
+        			Logger.warn("Omni search found too much records for term: '%s'. Returning first 100", term);
+        			//TODO add a warning on client side
+        			break;
+        		}
         	}
     	}
     	
