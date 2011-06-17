@@ -1,8 +1,10 @@
 #{extends 'main.html' /}
-#{set _app_title:'Database' /}
+#{set title:'Browse the data' /}
 
 #{set 'moreStyles' }
-<link rel="stylesheet" type="text/css" href="@{'/public/ext-4.0.2/resources/css/ext-all-gray.css'}"/> 
+<link rel="stylesheet" type="text/css" media="screen" href="@{'/public/ext-4.0.2/resources/css/ext-all-gray.css'}"/> 
+<link rel="stylesheet" type="text/css" media="screen" href="@{'/public/jquery-ui-1.8.13/css/smoothness/jquery-ui.css'}">
+
 <style type="text/css">
 .x-toolbar-text, 
 .x-column-header, 
@@ -14,7 +16,6 @@
 	color: #3A3A3A !important;
 	background-color: white !important;
     overflow-y: auto;
-    
     font-family: 'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif;
 	color: #444;
 	font-size: 15px;
@@ -28,25 +29,77 @@
 .x-window-body-default pre { margin-left:1em } 
 
 
-#filter-box { margin-bottom: 1em; } 
-#the-grid { margin-bottom: 1em; } 
+#omni-search {
+	margin: 1em;
+} 
+
+#omni-search input {
+	width: 750px;
+	font-size:	18px;
+	font-weight: 400;
+    border: 1px solid #CFCFCF;
+    padding: 8px;
+	margin-right: 10px;
+    box-sizing:content-box;
+    -webkit-box-sizing:content-box;
+    -moz-box-sizing:content-box;
+    -ms-box-sizing:content-box;
+}
+
+#omni-search input:focus, 
+#omni-search input:hover
+  {
+    border-color: #AAAAAA;
+} 
+
+#omni-search .hint {
+	width: 750px;
+	margin: 1em 0 2em;
+	font-size: 0.85em;
+	font-weight: 300;
+}
+
+#info, #download  { 
+	margin-top: .8em
+ }
+ 
+.ui-autocomplete-loading { 
+	background: white url('@{'/public/images/ui-anim_basic_16x16.gif'}') right center no-repeat; 
+}
+
+.ui-autocomplete {
+		max-height: 300px;
+		overflow-y: auto;
+		/* prevent horizontal scrollbar */
+		overflow-x: hidden;
+}
+/* IE 6 doesn't support max-height. We use height instead, but this forces the menu to always be this tall */
+* html .ui-autocomplete {
+	height: 300px;
+}
 </style>
 #{/set}
 
 #{set 'moreScripts'} 
 <script type="text/javascript" src="@{'/public/ext-4.0.2/bootstrap.js'}"></script> 
+<script type="text/javascript" src="@{'/public/jquery-ui-1.8.13/js/jquery-ui.min.js'}" charset="utf-8" ></script>
 #{/set}
 
-<div id="search-wrapper">
-<div id="filter-box"></div> 
-</div>
+<h1>Browse the database</h1>
 
+<div id="omni-search">
+<input id="omni" type="text" > <button id="omni-button" class="button">Search</button>
+<div class="hint">
+Refine your search entering the keywords on which you are interested. 
+Separate multiple keywords using the comma character. 
+Enter at least three characters to get suggestions for your search.
+</div>
+</div>
 
 <div id="the-grid">
 </div>
 
 <div id="info">
-Displaying <em id="label-from">0</em> - <em id="label-to">0</em> of <em id="label-total">0</em> entrie(s). 
 </div>
 
 <div id="download">
@@ -60,7 +113,7 @@ Download the displayed dataset in <a id="downloadCsv" href="javascript:void(0)">
  </form> 
     
     
-<script type="text/javascript"><!--
+<script type="text/javascript">
 
 Ext.Loader.setConfig({enabled: true});
 
@@ -76,185 +129,6 @@ Ext.require([
 
 Ext.onReady(function(){
 
-	/** Create stores required by the filter componenets */
-    var speciesStore = Ext.create('Ext.data.Store', {
-    	autoLoad: true,
-        fields: [ 'name', 'count' ],
-        proxy: {
-            type: 'ajax',
-	        noCache: false,
-            url: '@{Data.species()}',
-            reader: {
-                root: 'species',
-                totalProperty: 'total'
-            }
-        }
-    });    
-
-    var dbTypesStore = Ext.create('Ext.data.Store', {
-    	autoLoad: true,
-        fields: ['name'],
-        proxy: {
-            type: 'ajax',
-            noCache: false,
-            url: '@{Data.dbtypes()}',
-            reader: {
-                root: 'dbtypes',
-                totalProperty: 'total'
-            }
-        }
-    });    
-
-
-    var fTypesStore = Ext.create('Ext.data.Store', {
-    	autoLoad: true,
-        fields: ['name'],
-        proxy: {
-            type: 'ajax',
-            noCache: false,
-            url: '@{Data.featureTypes()}',
-            reader: {
-                root: 'items',
-                totalProperty: 'total'
-            }
-        }
-    }); 
-
-
-    var fDescriptionsStore = Ext.create('Ext.data.Store', {
-    	autoLoad: true,
-        fields: ['name'],
-        proxy: {
-            type: 'ajax',
-            noCache: false,
-            url: '@{Data.featureDescriptions()}',
-            reader: {
-                root: 'items',
-                totalProperty: 'total'
-            }
-        }
-    });    
-       
-	/** Create filter components */
-	var align = 'top';
-	
-	var speciesCombo = Ext.create('Ext.form.field.ComboBox', {
-        fieldLabel: 'Specie(s)',
-        displayField: 'name',
-        width: 500,
-        labelWidth: 130,
-        labelAlign: align,
-        store: speciesStore,
-        queryMode: 'local',
-        typeAhead: true,
-        multiSelect: true,
-        forceSelection: true
-    });
-
-/*    speciesCombo.on('beforequery', function(event, options ) 
-    	{
-    	  if( !event.combo.multiSelect ) return;
-
-    	  var items = event.query.split(event.combo.delimiter)
-		  event.query = (items!=null && items.length>0) ? items[items.length-1] : "";
-	    })
-	*/
-	
-	var dbTypesCombo = Ext.create('Ext.form.field.ComboBox', {
-        fieldLabel: 'DB type',
-        displayField: 'name',
-        labelWidth: 130,
-        labelAlign: align,
-        store: dbTypesStore,
-        queryMode: 'local',
-        typeAhead: true,
-        style: { marginRight: '14px' } 
-    });
-
-
-	var dbIdField = Ext.create('Ext.form.field.Text', {
-        fieldLabel: 'DB Id',
-        labelAlign: align
-    });
-	
-	var fTypesCombo = Ext.create('Ext.form.field.ComboBox', {
-        fieldLabel: 'Feature type',
-        displayField: 'name',
-        width: 500,
-        labelWidth: 130,
-        labelAlign: align,
-        store: fTypesStore,
-        queryMode: 'local'
-    });	
-
-
-	var fDescriptionsCombo = Ext.create('Ext.form.field.ComboBox', {
-        fieldLabel: 'Feature description',
-        displayField: 'name',
-        width: 500,
-        labelWidth: 130,
-        labelAlign: align,
-        store: fDescriptionsStore,
-        queryMode: 'local'
-    });	
-
-	var fSearchButton = Ext.create('Ext.Button', {
-	    text: 'Filter Data',
-	    height: 24,
-	    style: { marginLeft: '20px', marginTop: '18px' } 
-	});
-	
-	// explicitly create a Container
-	Ext.create('Ext.container.Container', {
-	    layout: {
-	        type: 'vbox'
-	    },
-	    width: 878,
-	    height: 250,
-	    renderTo: 'filter-box',
-	    defaults: {
-	        labelWidth: 80,
-	        flex: 1,
-	        style: { padding: '8px' }
-	    },
-	    items: [ 
-	        speciesCombo, 
-	        { 
-				xtype: 'container',
-				layout: 'hbox',
-				width: '100%',
-			    items: [ dbTypesCombo, dbIdField ] 
-			} , 
-		    fTypesCombo, 
-	        { 
-				xtype: 'container',
-				layout: 'hbox',
-				width: '100%',
-			    items: [ fDescriptionsCombo, fSearchButton ] 
-			} 
-		     
-		]
-	});
-
-
-    Ext.select('#filter-box').each(function(el) {
-        Ext.create('Ext.form.FieldSet', {
-            contentEl: el,
-            renderTo: el.parent(),
-            title: 'View filter options',
-            collapsible: true,
-            collapsed: true
-        })
-    });
-
-	
-	
-	fTypesCombo.on('change', function(field){
-		console.log('fTypesCombo  Change')
-		fDescriptionsCombo.setValue(null);
-		fDescriptionsStore.load({params: { 'type': field.getValue() }} );
-	  })
-	
 	/** The grid control */
 	
 	Ext.define('LeishData', {
@@ -277,6 +151,7 @@ Ext.onReady(function(){
             // load using script tags for cross domain, if the data in on the same domain as
             // this page, an HttpProxy would be better
             type: 'ajax',
+            noCache: false,
             url: '@{Data.db()}',
             reader: {
                 root: 'entries',
@@ -289,10 +164,22 @@ Ext.onReady(function(){
 
 	store.on("load", function( thisStore, records, successful, operation, options ) 
 		{
-			//console.info(store.first().index + " - " + store.last().index + "; page: " + store.getPageFromRecordIndex(store.first().index) )
-			$('#label-from').text( Ext.util.Format.number(store.first().index+1, "0,0")); 
-			$('#label-to').text( Ext.util.Format.number(store.last().index+1, "0,0")); 
-			$('#label-total').text( Ext.util.Format.number(store.getTotalCount(), "0,0")); 
+			var tot = store.getTotalCount();
+			 
+			if( tot === 0 ) {
+				$('#info').text("No record found");
+			} 
+			else if(tot===1) {
+				$('#info').html("Displaying <em>1</em> entry.");
+			} 
+			else {
+				var first = store.first() ? Ext.util.Format.number(store.first().index+1, "0,0") : "0"; 
+				var last = store.last() ? Ext.util.Format.number(store.last().index+1, "0,0") : "0"; 
+				var tot = Ext.util.Format.number(tot, "0,0")
+				var msg = "Displaying <em>"+first+"</em> - <em>"+last+"</em> of <em>"+tot+"</em> entries." 
+				$('#info').html(msg); 
+			} 
+
 		});
 
 	
@@ -402,46 +289,161 @@ Ext.onReady(function(){
 			}).show();
 		});
 
-	fSearchButton.on('click', function() 
-		{
-		    var values = {};
-		    values['organism.name.value'] = speciesCombo.getValue();
-		    values['dbReference.type'] = dbTypesCombo.getValue();
-		    values['dbReference.id'] = dbIdField.getValue();
-		    values['feature.type'] = fTypesCombo.getValue();
-		    values['feature.description'] = fDescriptionsCombo.getValue();
 
-	        var theFilters = [];
-			for( var key in values ) if( values[key]!=null )  { 
-				theFilters
-					.push(new Ext.util.Filter({property: key, value: values[key]}))
-			} 
-
-			store.remoteFilter=false;
-			store.clearFilter(true);
-			store.remoteFilter=true;
-			store.filter(theFilters)		
-
-		});
-	
     // trigger the data store load
     store.guaranteeRange(0, 199);
 
 
     //Ext.History.init();
 
+    
+    /** omni search box */
+
+	var cache = {}, lastXhr, selitems = {};
+
+    
+    function split( val ) {
+		return val.split( /,\s*/ );
+	}
+
+	function extractLast( term ) {
+		return split( term ).pop();
+	}
+
+	function append(map, key, value) { 
+		if( map[key] == null ) {
+			map[key] = value;
+			return;
+		} 
+
+		if( typeof(map[key]) == 'array' ) {
+			map[key].push(value)
+			return;
+		} 
+
+		map[key] = [ map[key], value ]
+	}
+	
+	function applyFilter(filterStr) { 
+		var map = {}
+		var aa = split(filterStr);
+		for( var i=0; aa && i<aa.length; i++ ) { 
+			var v = aa[i];
+			if( v == null || $.trim(v).length==0 ) { continue; }
+			
+			if( selitems[v] == null ) {  
+				// it is not known the 'field' for this value 
+				append(map,'_',v)
+				continue;
+			}
+
+			append(map, selitems[v], v);
+		}
+
+		var theFilters = [];
+		for( var key in map ) if( map[key]!=null )  { 
+			theFilters
+				.push(new Ext.util.Filter({property: key, value: map[key]}))
+		} 
+
+		store.remoteFilter=false;
+		store.clearFilter(true);
+		store.remoteFilter=true;
+		store.filter(theFilters)			
+	}
+
+	$("#omni")
+	
+	.bind( "keydown", function( event ) {
+			// don't navigate away from the field on tab when selecting an item
+			if ( event.keyCode === $.ui.keyCode.TAB && $(this).data( "autocomplete" ).menu.active ) {
+				event.preventDefault();
+			}
+			// fire here the event to submit the entered data
+			else if( event.keyCode === $.ui.keyCode.ENTER && !$(this).data( "autocomplete" ).menu.active ) {
+				applyFilter(this.value)
+			}
+		})
+			
+	.autocomplete({
+		minLength: 2,
+		delay: 400,
+		
+		/* 
+		 * redefine the term length constraint  
+		 */
+		search: function() {
+			// custom minLength
+			var term = extractLast(this.value);
+			if ( term.length < 2 ) {
+				return false;
+			}
+		},
+		/* 
+		 *  prevent value inserted on focus
+		 */		
+		focus: function(event, ui) {
+			return false;
+		},
+
+		/* 
+		 * Check if the requested data in available on teh cache otherwise load them 
+		 * remotly using an ajax call 
+		 */
+		source: function( request, response ) {
+			var term = extractLast( request.term )
+			
+			if ( term in cache ) {
+				response( cache[ term ] );
+				return;
+			}
+	
+			lastXhr = $.getJSON( "@{Data.omnisearch()}", {term: term}, function( data, status, xhr ) {
+				cache[ term ] = data;
+				if ( xhr === lastXhr ) {
+					response( data );
+				}
+			});
+
+		},
+
+		/* 
+		 * Append the selected item to the list of items 
+		 */ 
+		select: function(event, ui) {
+			
+			var terms = split( this.value );
+			// 1. remove the current input
+			terms.pop();
+			// 2. add the selected item
+			terms.push( ui.item.value ); // <---- Look '.value' is the attribute in our structure (use '.value' for array of strings)
+			// 3. join in a unique string
+			this.value = terms.join( ", " );
+			// 4. each selected items is cached in a local map it will be used at the end to create the filter condition
+			selitems[ui.item.value] = ui.item.field;
+			return false;
+		}
+		
+	})
+	;
+
+	$('#omni').focus();    
+
+	$('#omni-button').click(function() { applyFilter($('#omni').val()) });
+	
+    
+    /** Download links */
+    
     $("#downloadCsv").click(
    		function() {
-   	   		console.dir(store.filters.items)
 			window.open('@{Data.downloadCsv()}', '_blank')
     	}) 
 
     $("#downloadFasta").click(
            		function() {
-           	   		console.dir(store.filters.items)
         			window.open('@{Data.downloadFasta()}', '_blank')
             	}) 
     	
 });
 
---></script>
+</script>

@@ -1,0 +1,160 @@
+#{extends 'main.html' /}
+#{set _app_title:'Home' /}
+
+<link rel="stylesheet" type="text/css" media="screen" href="@{'/public/jquery-ui-1.8.13/css/smoothness/jquery-ui.css'}">
+<script type="text/javascript" charset="utf-8" src="@{'/public/jquery-ui-1.8.13/js/jquery-ui.min.js'}" ></script>
+
+
+<h1>Omni search</h1>
+
+<style type="text/css">
+#omni-search {
+	margin: 1em;
+} 
+
+#omni-search input {
+	width: 40em;
+	font-size:	18px;
+	font-weight: 400;
+	height: 28px;
+    border: 1px solid #CFCFCF;
+}
+
+#omni-search input:focus, 
+#omni-search input:hover
+  {
+    border-color: #AAAAAA;
+} 
+
+.defaultTextActive { color: #a1a1a1;  }
+
+.ui-autocomplete-loading { 
+	background: white url('@{'/public/images/ui-anim_basic_16x16.gif'}') right center no-repeat; 
+}
+
+.ui-autocomplete {
+		max-height: 300px;
+		overflow-y: auto;
+		/* prevent horizontal scrollbar */
+		overflow-x: hidden;
+	}
+	/* IE 6 doesn't support max-height. We use height instead, but this forces the menu to always be this tall */
+	* html .ui-autocomplete {
+		height: 300px;
+	}
+
+</style>
+
+
+<div id="omni-search">
+<input id="omni" title="Hola" type="text" > <button class="button">Search</button>
+</div>
+
+
+<script type="text/javascript">
+$(document).ready(function() 
+	{
+
+	function split( val ) {
+		return val.split( /,\s*/ );
+	}
+
+	function extractLast( term ) {
+		return split( term ).pop();
+	}
+
+	
+	
+	var cache = {}, lastXhr, selitems = {};
+
+	$("#omni")
+	
+	.bind( "keydown", function( event ) {
+			// don't navigate away from the field on tab when selecting an item
+			if ( event.keyCode === $.ui.keyCode.TAB && $(this).data( "autocomplete" ).menu.active ) {
+				event.preventDefault();
+			}
+			// fire here the event to submit the entered data
+			else if( event.keyCode === $.ui.keyCode.ENTER && !$(this).data( "autocomplete" ).menu.active ) {
+				console.info("PRESSED ENTER")
+			}
+		})
+			
+	.autocomplete({
+		minLength: 2,
+
+		/* 
+		 * redefine the term length constraint  
+		 */
+		search: function() {
+			// custom minLength
+			var term = extractLast(this.value);
+			if ( term.length < 2 ) {
+				return false;
+			}
+		},
+		/* 
+		 *  prevent value inserted on focus
+		 */		
+		focus: function(event, ui) {
+			console.group('focus')
+			console.dir(ui.item)
+			console.groupEnd()
+			return false;
+		},
+
+		/* 
+		 * Check if the requested data in available on teh cache otherwise load them 
+		 * remotly using an ajax call 
+		 */
+		source: function( request, response ) {
+			console.group('source')
+			var term = extractLast( request.term )
+			
+			if ( term in cache ) {
+				response( cache[ term ] );
+				return;
+			}
+	
+			lastXhr = $.getJSON( "@{Data.omnisearch()}", {term: term}, function( data, status, xhr ) {
+				cache[ term ] = data;
+				if ( xhr === lastXhr ) {
+					response( data );
+				}
+			});
+
+			console.groupEnd()
+		},
+
+		/* 
+		 * Append the selected item to the list of items 
+		 */ 
+		select: function(event, ui) {
+			
+			var terms = split( this.value );
+			// 1. remove the current input
+			terms.pop();
+			// 2. add the selected item
+			terms.push( ui.item.value ); 
+			// 3. join in a unique string
+			this.value = terms.join( ", " );
+			// 4. each selected items is cached in a local map it will be used at the end to create the filter condition
+			selitems[ui.item.value] = ui.item.field;
+			return false;
+		}
+		
+	})
+	
+	.data("autocomplete")._renderItem = function( ul, item ) {
+			console.info('renderitem')
+			return $( "<li></li>" )
+				.data( "item.autocomplete", item )
+				.append( "<a>" + item.value + "</a>" )
+				.appendTo(ul); 
+			}
+	
+	;
+	
+	$('#omni').focus(); 
+	})
+</script>

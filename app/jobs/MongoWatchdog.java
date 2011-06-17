@@ -25,7 +25,7 @@ import com.mongodb.DBObject;
  *
  */
 
-@Every("1min")
+@Every("2min")
 public class MongoWatchdog extends Job {
 
 	@Inject
@@ -58,7 +58,7 @@ public class MongoWatchdog extends Job {
 		 */
 		if( status == Status.OK && hasError ) { 
 			status = Status.FAIL; 
-			String message = String.format("Failing PINGing Mongo DB server at '%s' [%s]", connection, result);
+			String message = String.format("Failing PINGing Mongo DB server at '%s' %s", connection, result != null ? "["+result+"]" : "");
 			if( exception == null ) { 
 				Logger.error(message);
 				sendMail("Leish DB - Status ERROR", message);
@@ -77,8 +77,7 @@ public class MongoWatchdog extends Job {
 			sendMail("Leish DB - Status OK", message);
 		}
 		
-		
-		
+				
 	}
 	
 	
