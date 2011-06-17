@@ -13,6 +13,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.bson.types.ObjectId;
 
 import play.Logger;
+import play.Play;
 import play.cache.Cache;
 import play.cache.CacheFor;
 import play.mvc.Before;
@@ -329,12 +330,15 @@ public class Data extends Controller {
         	}
         	chunk.append("\n");
     	
-
-        	
         	if( chunk.capacity() > MAX_CHUNK_CAPACITY  ) { 
         		response.writeChunk(chunk.toString());
         		chunk = new StringBuilder();
-        		return;
+        		/*
+        		 * !!! ONLY IN DEV MODE exit on the first chunk !!! 
+        		 */
+        		if( Play.mode.isDev()) { 
+        			return;
+        		}
         	}
         }  	
 
@@ -373,6 +377,12 @@ public class Data extends Controller {
         	if( chunk.capacity() > MAX_CHUNK_CAPACITY) { 
         		response.writeChunk(chunk.toString());
         		chunk = new StringBuilder();
+        		/*
+        		 * !!! ONLY IN DEV MODE exit on the first chunk !!! 
+        		 */
+        		if( Play.mode.isDev()) { 
+        			return;
+        		}
         	}
         }  	
 
@@ -383,6 +393,40 @@ public class Data extends Controller {
    	
     }
     
+    
+    public static void omnisearch(String term) { 
+    	DBCollection index = db.getCollection("bigindex");
+    	/*
+    	 * Best option, we have just one value for the specified value
+    	 */
+    	BasicDBList data = new BasicDBList();
+    	DBObject view = new BasicDBObject();
+    	view.put("value", 1);
+    	view.put("field", 1);
+    	view.put("_id", 0);
+    	
+    	DBObject item = index.findOne(new BasicDBObject("value", term), view);
+    	
+    	if( item != null ) { 
+    		data.add(item);
+    	}
+    	else { 
+    		term = "^" + term; 
+    		DBObject regex = new BasicDBObject();
+    		regex.put("$regex",term);
+    		regex.put("$options","i");
+    		DBObject ref = new BasicDBObject("value", regex);
+        	DBCursor cursor = index.find(ref, view);
+        	while( cursor.hasNext() ) { 
+        		item = cursor.next();
+        		data.add(item);
+        	}
+    	}
+    	
+    	DBObject result = new BasicDBObject();
+    	result.put("data", data);
+    	renderText( data.toString() );
+    }
     
 
 }

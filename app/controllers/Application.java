@@ -14,6 +14,7 @@ import org.uniprot.uniprot.Entry;
 import org.uniprot.uniprot.GeneNameType;
 
 import play.CorePlugin;
+import play.cache.CacheFor;
 import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Util;
@@ -39,15 +40,24 @@ public class Application extends Controller {
 	
 	@Before
 	public static void before() { 
-		renderArgs.put("_app_title", "Leish DB");
+
 	}
 	
 	
 	/**
 	 * Render the project index page 
 	 */
+    @CacheFor("5min")
     public static void index() {
-    	render();
+    	/* Lookup data */
+    	DBCollection coll = db.getCollection("leish_species");
+        
+		DBObject filterBy = new BasicDBObject();
+		filterBy .put("value", new BasicDBObject("$gt", 20));
+    	DBCursor species = coll.find(filterBy);
+    	
+    	/* Render page */
+    	render(species);
     }
 
     
@@ -59,12 +69,6 @@ public class Application extends Controller {
     	render();
     }
  
-    /**
-     * Just a sample page for testing purpose 
-     */
-    public static void layout() { 
-    	render();
-    }
 
     public static void db() { 
     	render();
@@ -171,13 +175,15 @@ public class Application extends Controller {
 		String info = CorePlugin.computeApplicationStatus(false);
 		render(info);
 	} 
-	
-	public static void tab() { 
-		render();
+		
+	public static void chunk(String echo) { 
+    	response.contentType = "text/csv";
+    	response.setHeader("Transfer-Encoding", "chunked");
+    	response.writeChunk(echo);
 	}
 	
-	public static void test() { 
-		render();
+	public static void any(String page) { 
+		render(String.format("Test/%s.html", page));
 	}
     
 }

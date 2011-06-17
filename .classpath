@@ -2,16 +2,14 @@
 <classpath>
 	<classpathentry excluding="views/**" kind="src" path="app"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="src" path="sass-1.0"/>
-	<classpathentry kind="src" path="guice-1.1.1"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/play-1.2.1.jar"/>
-	<classpathentry kind="lib" path="/Users/ptommaso/workspace/leishdb/lib/mongo-2.5.3.jar"/>
+	<classpathentry kind="lib" path="/Users/ptommaso/workspace/leishdb/lib/mongo-2.6.3.jar"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/workspace/leishdb/modules/sass-1.0/lib/jruby-complete-1.4.0.jar"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/workspace/leishdb/modules/sass-1.0/lib/play-sass.jar"/>
-	<classpathentry kind="lib" path="/Users/ptommaso/workspace/leishdb/modules/guice-1.1.1/lib/aopalliance.jar"/>
-	<classpathentry kind="lib" path="/Users/ptommaso/workspace/leishdb/modules/guice-1.1.1/lib/guice-2.0.jar"/>
-	<classpathentry kind="lib" path="/Users/ptommaso/workspace/leishdb/modules/guice-1.1.1/lib/play-guice.jar"/>
+	<classpathentry kind="lib" path="/Users/ptommaso/workspace/leishdb/modules/guice-1.2/lib/aopalliance-1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/ptommaso/workspace/leishdb/modules/guice-1.2/lib/guice-3.0.jar"/>
+	<classpathentry kind="lib" path="/Users/ptommaso/workspace/leishdb/modules/guice-1.2/lib/play-guice.jar"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/activation-1.1.1.jar"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/antlr-2.7.6.jar"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/asm-all-3.3.1.jar"/>
@@ -42,7 +40,7 @@
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/ivy-2.2.0.jar"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/jamon-2.7.jar"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/javassist-3.9.0.GA.jar"/>
-	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/javax.inject-1.0.jar" sourcepath="/Users/ptommaso/tools/play-1.2.1/framework/src/play"/>
+	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/javax.inject-1.0.jar"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/jaxen-1.1.jar"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/jj-imaging.jar"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/jj-simplecaptcha.jar"/>

@@ -18,6 +18,7 @@ $titleColor: #58ACC0;
  http://ryanfait.com/resources/footer-stick-to-bottom-of-page/
 */
 
+
 html {
     overflow-y: scroll;
 }
@@ -29,10 +30,6 @@ html, body {
     line-height: 1.5em !important;
     text-shadow: #fff 1px 1px 0px; 
     height: 100%;
-    -webkit-box-sizing:content-box;
-    -moz-box-sizing:content-box;
-    -ms-box-sizing:content-box;
-    box-sizing:content-box;
 }
 
 #push {
@@ -51,6 +48,10 @@ html, body {
     -ms-box-sizing:content-box;
     box-sizing:content-box;
 }
+
+.content {
+	padding-bottom: 1em;
+} 
 
 h1, h2, h3, h4, h5 {
     color: #333;
@@ -323,6 +324,56 @@ a:hover {
     color: #c00;
     font-size: 13px;
 }
+
+/*
+ * CSS button
+ * see http://yayinternets.com/articles/emulating-google-style-buttons/
+ */
+ 
+.button {
+  -moz-border-radius:      3px;
+  -webkit-border-radius:   3px;
+  background:              white url('images/button.png') 0 0 repeat-x; /* Image fallback */
+  background:             -moz-linear-gradient(0% 170% 90deg, #c4c4c4, white);
+  background:             -webkit-gradient(linear, 0% 0%, 0% 170%, from(white), to(#c4c4c4));
+  border:                  1px solid;
+  border-color:            #e6e6e6 #cccccc #cccccc #e6e6e6;
+  border-radius:           3px;
+  color:                   #404040;
+  display:                 inline-block;
+  font-family:            "helvetica neue", helvetica, arial, freesans, "liberation sans", "numbus sans l", sans-serif;
+  font-size:               13px;
+  outline:                 0;
+  padding:                 5px 8px 5px;
+  text-align:              center;
+  text-decoration:         none;
+  text-shadow:             1px 1px 0 white; 
+  white-space:             nowrap; }
+
+  .button:hover {
+    background:           -moz-linear-gradient(0% 170% 90deg, #b8b8b8, white);
+    background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(white), to(#b8b8b8));
+    border-color:          #99ccff;
+    color:                 #333333; }
+
+
+  .button:active, .button:focus {
+    background-position:   0 -25px;
+    background:           -moz-linear-gradient(0% 170% 90deg, white, #dedede);
+    background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(#dedede), to(white));
+    border-color:          #8fc7ff #94c9ff #94c9ff #8fc7ff;
+    color:                 #1a1a1a;
+    text-shadow:           1px -1px 0 rgba(255, 255, 255, 0.5); } 
+    
+   .button.disabled {
+    background-position:   0 -25px;
+    background:           -moz-linear-gradient(0% 170% 90deg, white, #dedede);
+    background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(#dedede), to(white));
+    border-color:          #ccc #ccc #ccc #ccc;
+    color:                 #aaa;
+    text-shadow:           1px -1px 0 rgba(255, 255, 255, 0.5); } 
+
+
 
 /** Main style */
 

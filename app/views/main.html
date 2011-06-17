@@ -1,57 +1,68 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
-        <title>#{get '_app_title' /}</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        #{get 'preStyles' /}
-        <link rel="stylesheet" type="text/css" media="screen" href="@{'/public/css/main.scss'}">
-        #{get 'moreStyles' /}
-        <link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
-        <script src="@{'/public/javascripts/jquery-1.4.2.min.js'}" type="text/javascript" charset="utf-8"></script>
-        #{get 'moreScripts' /}
+	#{if title}
+	<title>${title} | Leish Drug Database</title>
+	#{/if}
+	#{elseif !meta?.contains('<title>') }
+	<title>Leish Drug Database</title>
+	#{/elseif}
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	#{get 'preStyles' /}
+	<link rel="stylesheet" type="text/css" media="screen" href="@{'/public/css/main.scss'}">
+	#{get 'moreStyles' /}
+	<link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
+	<script src="@{'/public/javascripts/jquery-1.4.2.min.js'}" type="text/javascript" charset="utf-8"></script>
+	#{get 'moreScripts' /}
 </head>
 
 <body > 
 <div id="main">
-<div id="header"> 
-    <div class="wrapper">   
-        <h1 id="logo"><a href="/">${_app_title}</a></h1> 
-         
-        <ul id="menu"> 
-            <li> 
-                <a href="/">Home</a><span>&gt;</span> 
-            </li> 
-            <li> 
-                <a href="@{Application.description()}">Learn</a><span>&gt;</span> 
-            </li> 
-            <li> 
-                <a href="@{Application.db()}">Database</a><span>&gt;</span> 
-            </li> 
-            <li> 
-                <a href="@{Application.contacts()}">Contacts</a><span>&gt;</span> 
-            </li> 
-        </ul> 
-    </div>      
-</div> 
-        
-<div id="top">
-</div> 
-    
-<div class="wrapper content"> 
-	<div class="wikistyle"> 
-	#{doLayout /}
+	<div id="header"> 
+	    <div class="wrapper">   
+	        <h1 id="logo"><a href="/">Leish DB</a></h1> 
+	        <ul id="menu"> 
+	            <li><a href="/">Home</a><span>&gt;</span> </li> 
+	            <li><a href="@{Application.description()}">Learn</a><span>&gt;</span></li> 
+	            <li><a href="@{Application.db()}">Database</a><span>&gt;</span></li> 
+	            <li><a href="@{Application.contacts()}">Contacts</a><span>&gt;</span> </li> 
+	        </ul> 
+	    </div>      
 	</div> 
-</div> 
-
-<div id="push"></div> 
+	<div id="top">
+	</div> 
+	<div class="content wrapper"> 
+		<div class="wikistyle"> 
+		#{doLayout /}
+		</div> 
+	</div> 
+	<div id="push"></div> 
 </div>    
     
 <div id="footer"> 
     <div class="wrapper"> 
         <p class="licence"> 
-		<img src="@{'/public/images/crg.png'}" height="18" width="18" alt="CRG logo" style="margin-bottom: -2px"> ${_app_title} is hosted by the <a href="http://www.crg.es" target="_blank">Centre for Genomic Regulation</a> (CRG) of Barcelona 
+		<img src="@{'/public/images/crg.png'}" height="18" width="18" alt="CRG logo" style="margin-bottom: -2px">The Leish Drug Database project is hosted by the <a href="http://www.crg.es" target="_blank">Centre for Genomic Regulation</a> (CRG) of Barcelona 
         </p> 
     </div> 
 </div> 
+
+#{if play.Play.mode.isProd()}
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-16712397-5']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+#{/if}
 </body> 
 </html>

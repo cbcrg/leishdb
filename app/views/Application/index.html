@@ -20,7 +20,16 @@
 </tr>
 </thead>
 
-<tbody data-bind="template: 'indexTableBody'">
+<tbody >
+#{list species}
+<tr>
+<td>${_.get('_id')}</td>
+<td align='right'>${_.get('value').format("#,##0")}</td>
+<td align='right'>x</td>
+<td align='right'>y</td>
+<td align='right'>1.0</td>
+</tr>
+#{/list}
 </tbody>
 </table>
 
@@ -28,29 +37,3 @@
 All known annotation have been extracted from <a href="http://www.uniprot.org/news/2011/05/03/release" target="_blank">UniProt Release 2011_05</a>
 </div>
 
-<script type="text/html" id="indexTableBody">
-{{each entry}}
-<tr>
-<td>{{= name }}</td>
-<td align='right'>{{= count }}</td>
-<td align='right'>x</td>
-<td align='right'>y</td>
-<td align='right'>1.0</td>
-</tr>
-{{/each}}
-</script>
-
-<script type="text/javascript">
-//The view model is an abstract description of the state of the UI, but without any knowledge of the UI technology (HTML)
-var viewModel = {
-    entry: ko.observableArray([])
-};
- 
-ko.applyBindings(viewModel);
-
-$.getJSON("@{Data.species('minCount':10)}", function(data) { 
-	//console.dir(data);
-	viewModel.entry(data.species)
-})
-
-</script>

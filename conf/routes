@@ -4,8 +4,10 @@
 
 # Home page
 GET     /                                       Application.index
-GET     /@layout                                Application.layout
 GET 	/{action}.html							Application.{action}
+GET		/@{page}.test							Application.any({page})		
+GET		/download/fasta							Data.downloadFasta
+GET		/download/csv							Data.downloadCsv
 GET		/{action}.json							Data.{action}
 
 # Map static resources from the /app/public folder to the /public path
