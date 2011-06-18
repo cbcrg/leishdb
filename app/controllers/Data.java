@@ -63,9 +63,19 @@ public class Data extends Controller {
 		response.contentType = "application/x-json";
 	}
 
-	@Before static void mongoBegin() {  db.requestStart(); }
+	@Before static void mongoBegin() {  
+		if( Play.configuration.getProperty("mongo.debug.requestStart") != null ) { 
+			Logger.info("mongo.debug.requestStart");
+			db.requestStart(); 
+		}
+	}
 	
-	@Finally static void mongoDone() {  db.requestDone(); }
+	@Finally static void mongoDone() {  
+		if( Play.configuration.getProperty("mongo.debug.requestDone") != null ) { 
+			Logger.info("mongo.debug.requestDone");
+			db.requestDone(); 
+		}
+	}	
 	
     /**
      * The main 'data' extraction method. The following HTTP parameters are supported 

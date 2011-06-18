@@ -1,7 +1,10 @@
 package controllers;
 
 import java.lang.reflect.Type;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -9,12 +12,14 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Level;
 import org.bson.types.ObjectId;
 import org.uniprot.uniprot.Entry;
 import org.uniprot.uniprot.GeneNameType;
 
 import play.CorePlugin;
-import play.cache.CacheFor;
+import play.Logger;
+import play.Play;
 import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Finally;
@@ -38,16 +43,24 @@ public class Application extends Controller {
 	@Inject
 	static DB db;	
 	
+	@Before static void mongoBegin() {  
+		if( Play.configuration.getProperty("mongo.debug.requestStart") != null ) { 
+			Logger.info("mongo.debug.requestStart");
+			db.requestStart(); 
+		}
+	}
 	
-	@Before static void mongoBegin() {  db.requestStart(); }
-	
-	@Finally static void mongoDone() {  db.requestDone(); }
-	
+	@Finally static void mongoDone() {  
+		if( Play.configuration.getProperty("mongo.debug.requestDone") != null ) { 
+			Logger.info("mongo.debug.requestDone");
+			db.requestDone(); 
+		}
+	}
 	
 	/**
 	 * Render the project index page 
 	 */
-    @CacheFor("5min")
+//    @CacheFor("5min")
     public static void index() {
     	/* Lookup data */
     	DBCollection coll = db.getCollection("leish_species");
@@ -175,6 +188,80 @@ public class Application extends Controller {
 		String info = CorePlugin.computeApplicationStatus(false);
 		render(info);
 	} 
+	
+
+	/** 
+	 * Show the Usage log file download page
+	 */
+	public static void playlogs() { 
+		/*
+		 * find out current defined loggers 
+		 */
+		Enumeration items = Logger.log4j.getLoggerRepository().getCurrentLoggers();
+		Map<String,String> loggers = new HashMap<String,String>();
+		while( items.hasMoreElements() ) { 
+			org.apache.log4j.Logger logger = (org.apache.log4j.Logger) items.nextElement();
+			if( logger.getLevel() != null ) { 
+				loggers.put(logger.getName(), logger.getLevel().toString());
+			}
+		}
+		loggers.put("rootLogger", Logger.log4j.getRootLogger().getLevel().toString());
+
+		/* render the page */
+		renderArgs.put("loggers", loggers);
+		render();
+	}
+	
+	   /**
+     * This method is invoked when a property value is update using by an ajax request.
+     * <p>
+     * Please NOTE: changing parameters name will break the code (they must match the javascript plugin definition)
+     * </p>
+     * 
+     * 
+     * @param element_id the property key hash code
+     * @param original_html the previous property value 
+     * @param update_value the new property value
+     */
+    public static void updateLogger( String element_id, String original_html, String update_value) { 
+    	Logger.debug("updateLogger(%s, %s, %s)", element_id, original_html, update_value);
+    	
+    	if( StringUtils.isEmpty(element_id )) { 
+    		return;
+    	}
+    	
+    	/* 
+    	 * replace special char '|' used to replace dots in logger identificator 
+    	 */
+    	final String loggerName = element_id.replace('|', '.');
+    	final String newLevel = update_value; 
+
+    	/* get the logger instance */
+    	org.apache.log4j.Logger logger=null;
+    	if( "rootLogger".equals( loggerName )) { 
+        	logger = Logger.log4j.getRootLogger();
+    	}
+    	else { 
+    		logger = Logger.log4j.getLogger(loggerName);
+    	}
+    	
+    	/* update level */
+    	if( logger != null ) { 
+    		logger.setLevel(Level.toLevel(newLevel));
+    		
+    		/* render back the updated value as confirmation */
+    		Logger.info("Logger '%s' switched to level '%s' ", loggerName, newLevel);
+    		renderText(update_value);
+
+    	}
+    	else { 
+    		Logger.warn("Unable to update logger level. Unknown logger name: '%s'", loggerName);
+			renderText("Invalid logger : " + loggerName);
+    	}
+    	
+    }
+		
+	
 		
 	public static void chunk(String echo) { 
     	response.contentType = "text/csv";
