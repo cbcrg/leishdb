@@ -13,16 +13,12 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.bson.types.ObjectId;
 
 import play.Logger;
-import play.Play;
-import play.cache.Cache;
 import play.cache.CacheFor;
 import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Http.Request;
-import play.mvc.Scope.Session;
 import play.mvc.Util;
 import util.MongoHelper;
-import util.ServerExtensions;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -40,8 +36,6 @@ import com.mongodb.util.JSON;
  */
 public class Data extends Controller {
 
-	static int MAX_CHUNK_CAPACITY = 500 * 1024;
-	
 	static final Map<String,String> mapping = 	
 		treemap( entry("accession","accession"),
 			 entry("name", "name"),
@@ -97,8 +91,6 @@ public class Data extends Controller {
 
         DBObject filterBy = decodeFilter(filterParam);
         Logger.debug("Data filter: %s", filterBy);
-        
-        cacheFilter( filterBy );
         
     	/* 
     	 * get the 'general' cursor 
@@ -173,21 +165,7 @@ public class Data extends Controller {
     	}
     } 
     
-    private static void cacheFilter(DBObject filterBy) {
-    	final String key = "data_filter_" + Session.current().getId();
-    	if( filterBy == null ) { 
-    		Cache.delete(key);
-    	}
-    	else { 
-    		Cache.set(key, filterBy);
-    	}
-	}
-    
-    private static DBObject cachedFilter( ) { 
-    	final String key = "data_filter_" + Session.current().getId();
-    	return (DBObject) Cache.get(key);
-    }
-
+ 
 	@Util
     static void addFilter(DBObject filterBy, Request request, String key) {
     	if( StringUtils.isNotEmpty(request.params.get(key))) { 
@@ -200,9 +178,9 @@ public class Data extends Controller {
         if( StringUtils.isEmpty(filterString) ) {
         	return null;
         }
+		Logger.debug("Data Filter: %s", filterString);
     	
         DBObject result = new BasicDBObject();
-		Logger.debug("Data Filter: %s", filterString);
 		BasicDBList filters = (BasicDBList) JSON.parse(filterString);
 		for( int i=0; i<filters.size(); i++ ) { 
 			DBObject item = (DBObject) filters.get(i);
@@ -298,103 +276,6 @@ public class Data extends Controller {
     }
     
 
-    /**
-     * Download selected sequences in CSV format 
-     */
-    public static void downloadCsv() { 
-    	DBCollection data = db.getCollection("leishdata");
-    	DBCursor cursor = data.find(cachedFilter());
-    	
-    	response.contentType = "text/csv";
-    	response.setHeader("Transfer-Encoding", "chunked");
-		response.setHeader("Content-Disposition", "attachment; filename=\"leishdb.csv\"");
-    	
-    	StringBuilder chunk = new StringBuilder(50 * 1024);
-
-    	//* write the header 
-    	long c=0;
-    	for( java.util.Map.Entry<String, String> map : mapping.entrySet() ) { 
-    		if( c++> 0 ) chunk.append(",");
-    		chunk.append( map.getKey() );
-    	}
-    	chunk.append("\n");
-    	
-    	// Append the data 
-        while( cursor.hasNext() ) {
-        	DBObject item = cursor.next();
-        	
-        	c=0;
-        	for( java.util.Map.Entry<String, String> map : mapping.entrySet() ) { 
-        		if( c++>0 ) chunk.append(",");
-        		Object value = MongoHelper.select(item, map.getValue()) ;
-        		chunk.append( value != null ? value.toString() : "" );
-        	}
-        	chunk.append("\n");
-    	
-        	if( chunk.capacity() > MAX_CHUNK_CAPACITY  ) { 
-        		response.writeChunk(chunk.toString());
-        		chunk = new StringBuilder();
-        		/*
-        		 * !!! ONLY IN DEV MODE exit on the first chunk !!! 
-        		 */
-        		if( Play.mode.isDev()) { 
-        			return;
-        		}
-        	}
-        }  	
-
-        // write out the remaing part 
-        if( chunk.length()>0 ) { 
-            response.writeChunk(chunk);
-        }
-
-    }
-    
-    /**
-     * Download the selected sequences in FASTA format
-     */
-    public static void downloadFasta() { 
-    
-       	DBCollection data = db.getCollection("leishdata");
-    	DBCursor cursor = data.find(cachedFilter());
-    	
-    	response.contentType = "text/csv";
-    	response.setHeader("Transfer-Encoding", "chunked");
-		response.setHeader("Content-Disposition", "attachment; filename=\"leishdb.fa\"");
-    	
-    	StringBuilder chunk = new StringBuilder(50 * 1024);
-
-    	// Append the data 
-        while( cursor.hasNext() ) {
-        	DBObject item = cursor.next();
-        	
-        	chunk.append(">") .append(MongoHelper.select(item, "accession") );
-        	chunk.append("\n");
-        	
-        	String seq = MongoHelper.select(item, "sequence.value");
-        	chunk.append( ServerExtensions.seqfmt(seq, 1, 60) );
-        	chunk.append("\n");
-
-        	if( chunk.capacity() > MAX_CHUNK_CAPACITY) { 
-        		response.writeChunk(chunk.toString());
-        		chunk = new StringBuilder();
-        		/*
-        		 * !!! ONLY IN DEV MODE exit on the first chunk !!! 
-        		 */
-        		if( Play.mode.isDev()) { 
-        			return;
-        		}
-        	}
-        }  	
-
-        // write out the remaing part 
-        if( chunk.length()>0 ) { 
-            response.writeChunk(chunk);
-        }
-   	
-    }
-    
-    
     public static void omnisearch(String term) { 
     	DBCollection index = db.getCollection("bigindex");
     	/*

@@ -1,4 +1,4 @@
-package jobs;
+package db;
 
 import javax.inject.Inject;
 
@@ -18,14 +18,13 @@ import com.mongodb.DB;
 import com.mongodb.DBObject;
 
 /**
- * Keep active the mongo DB connection and monitor for failure sending an email 
- * when something goes wrong 
+ * Send an email when something goes wrong 
  * 
  * @author Paolo Di Tommaso
  *
  */
 
-@Every("90s")
+@Every("5min")
 public class MongoWatchdog extends Job {
 
 	@Inject
@@ -37,21 +36,12 @@ public class MongoWatchdog extends Job {
 	
 	@Override
 	public void doJob() throws Exception {
-		
-		if( Play.configuration.getProperty("mongo.debug.watchdog") == null ) { return; } 
-		
-		
 		String connection = Play.configuration.getProperty("mongo.url");
 		boolean hasError = false;
 		Exception exception=null;
 		DBObject result = null;
 		
 		
-		if( Play.configuration.getProperty("mongo.debug.requestStart") != null ) { 
-			Logger.info("mongo.debug.requestStart");
-			db.requestStart(); 
-		}
-
 		try { 
 			if( Play.configuration.getProperty("mongo.debug.find") != null ) { 
 				Logger.info("Watchdog is running finder");
@@ -65,12 +55,6 @@ public class MongoWatchdog extends Job {
 		catch( Exception e ) { 
 			exception = e;
 			hasError = true;
-		}
-		finally { 
-			if( Play.configuration.getProperty("mongo.debug.requestDone") != null ) { 
-				Logger.info("mongo.debug.requestDone");
-				db.requestDone(); 
-			}
 		}
 	
 		/* 

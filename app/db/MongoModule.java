@@ -1,4 +1,4 @@
-package conf;
+package db;
 
 import java.lang.reflect.Field;
 import java.net.UnknownHostException;
@@ -33,16 +33,18 @@ public class MongoModule extends AbstractModule {
 	
 	static Mongo mongo;
 	
+	static DB db;
+	
 	static String dbName; 
 
 	/*
 	 * create the single instance 
 	 */
 	static { 
-		
-		java.util.logging.Logger.getLogger("com.mongodb").setLevel(java.util.logging.Level.ALL);
-		SLF4JBridgeHandler.install();
-
+		if( "true".equals(Play.configuration.getProperty("mongo.debug.driver")) ) { 
+			java.util.logging.Logger.getLogger("com.mongodb").setLevel(java.util.logging.Level.ALL);
+			SLF4JBridgeHandler.install();
+		}
 		
 		String conf = Play.configuration.getProperty("mongo.url","localhost");
 		Logger.info("Creating Mongo Driver instance to host: '%s'", conf);
@@ -60,7 +62,7 @@ public class MongoModule extends AbstractModule {
 	
 	@Provides 
 	public DB getDB() { 
-		return mongo.getDB(dbName);
+		return db=mongo.getDB(dbName);
 	}
 
 

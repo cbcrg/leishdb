@@ -404,12 +404,14 @@ Ext.onReady(function(){
     
     $("#downloadCsv").click(
    		function() {
-			window.open('@{Data.downloadCsv()}', '_blank')
+   	   		var filter = Ext.JSON.encode( store.filters.items );
+			window.open('@{Download.csv()}?filter='+filter, '_blank')
     	}) 
 
     $("#downloadFasta").click(
            		function() {
-        			window.open('@{Data.downloadFasta()}', '_blank')
+           	   		var filter = Ext.JSON.encode( store.filters.items );
+        			window.open('@{Download.fasta()}?filter='+filter, '_blank')
             	}) 
     	
 });

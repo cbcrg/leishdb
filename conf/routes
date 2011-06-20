@@ -6,9 +6,9 @@
 GET     /                                       Application.index
 GET 	/{action}.html							Application.{action}
 GET		/@{page}.test							Application.any({page})		
-GET		/download/fasta							Data.downloadFasta
-GET		/download/csv							Data.downloadCsv
 GET		/{action}.json							Data.{action}
+GET		/download/fasta							Download.fasta
+GET		/download/csv							Download.csv
 
 # Map static resources from the /app/public folder to the /public path
 GET     /public/                                staticDir:public

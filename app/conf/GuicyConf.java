@@ -5,6 +5,8 @@ import play.modules.guice.GuiceSupport;
 
 import com.google.inject.Guice;
 
+import db.MongoModule;
+
 /**
  * 
  * Set-up the application configuration based on Guice
