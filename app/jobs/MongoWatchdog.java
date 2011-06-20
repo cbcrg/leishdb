@@ -25,7 +25,7 @@ import com.mongodb.DBObject;
  *
  */
 
-@Every("1min")
+@Every("90s")
 public class MongoWatchdog extends Job {
 
 	@Inject
@@ -52,12 +52,12 @@ public class MongoWatchdog extends Job {
 			db.requestStart(); 
 		}
 
-		if( Play.configuration.getProperty("mongo.debug.find") != null ) { 
-			Logger.info("Watchdog is running finder");
-			db.getCollection("system.indexes").find().limit(1).next();
-		}
-		
 		try { 
+			if( Play.configuration.getProperty("mongo.debug.find") != null ) { 
+				Logger.info("Watchdog is running finder");
+				db.getCollection("system.indexes").find().limit(1).next();
+			}
+
 			result = db.command("ping");
 			Object val;
 			hasError = result == null || (val=result.get("ok"))==null || !"1.0".equals(val.toString()) ;
@@ -66,10 +66,11 @@ public class MongoWatchdog extends Job {
 			exception = e;
 			hasError = true;
 		}
-
-		if( Play.configuration.getProperty("mongo.debug.requestDone") != null ) { 
-			Logger.info("mongo.debug.requestDone");
-			db.requestDone(); 
+		finally { 
+			if( Play.configuration.getProperty("mongo.debug.requestDone") != null ) { 
+				Logger.info("mongo.debug.requestDone");
+				db.requestDone(); 
+			}
 		}
 	
 		/* 

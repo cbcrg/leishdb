@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -19,10 +20,7 @@ import org.uniprot.uniprot.GeneNameType;
 
 import play.CorePlugin;
 import play.Logger;
-import play.Play;
-import play.mvc.Before;
 import play.mvc.Controller;
-import play.mvc.Finally;
 import play.mvc.Util;
 
 import com.google.gson.Gson;
@@ -43,20 +41,6 @@ public class Application extends Controller {
 	@Inject
 	static DB db;	
 	
-	@Before static void mongoBegin() {  
-		if( Play.configuration.getProperty("mongo.debug.requestStart") != null ) { 
-			Logger.info("mongo.debug.requestStart");
-			db.requestStart(); 
-		}
-	}
-	
-	@Finally static void mongoDone() {  
-		if( Play.configuration.getProperty("mongo.debug.requestDone") != null ) { 
-			Logger.info("mongo.debug.requestDone");
-			db.requestDone(); 
-		}
-	}
-	
 	/**
 	 * Render the project index page 
 	 */
@@ -67,8 +51,8 @@ public class Application extends Controller {
         
 		DBObject filterBy = new BasicDBObject();
 		filterBy .put("value", new BasicDBObject("$gt", 20));
-    	DBCursor species = coll.find(filterBy);
-    	
+    	List<DBObject> species = coll.find(filterBy).toArray();
+
     	/* Render page */
     	render(species);
     }
@@ -266,6 +250,7 @@ public class Application extends Controller {
 	public static void chunk(String echo) { 
     	response.contentType = "text/csv";
     	response.setHeader("Transfer-Encoding", "chunked");
+    	response.writeChunk("echo=");
     	response.writeChunk(echo);
 	}
 	

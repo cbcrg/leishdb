@@ -18,7 +18,6 @@ import play.cache.Cache;
 import play.cache.CacheFor;
 import play.mvc.Before;
 import play.mvc.Controller;
-import play.mvc.Finally;
 import play.mvc.Http.Request;
 import play.mvc.Scope.Session;
 import play.mvc.Util;
@@ -63,19 +62,6 @@ public class Data extends Controller {
 		response.contentType = "application/x-json";
 	}
 
-	@Before static void mongoBegin() {  
-		if( Play.configuration.getProperty("mongo.debug.requestStart") != null ) { 
-			Logger.info("mongo.debug.requestStart");
-			db.requestStart(); 
-		}
-	}
-	
-	@Finally static void mongoDone() {  
-		if( Play.configuration.getProperty("mongo.debug.requestDone") != null ) { 
-			Logger.info("mongo.debug.requestDone");
-			db.requestDone(); 
-		}
-	}	
 	
     /**
      * The main 'data' extraction method. The following HTTP parameters are supported 
