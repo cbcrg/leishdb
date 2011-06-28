@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 	#{if title}
-	<title>${title} | Leish Drug Database</title>
+	<title>${title} | LeishProt</title>
 	#{/if}
 	#{elseif !meta?.contains('<title>') }
-	<title>Leish Drug Database</title>
+	<title>LeishProt</title>
 	#{/elseif}
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -21,12 +21,12 @@
 <div id="main">
 	<div id="header"> 
 	    <div class="wrapper">   
-	        <h1 id="logo"><a href="/">Leish DB</a></h1> 
+	        <h1 id="logo"><a href="/">LeishProt</a></h1> 
 	        <ul id="menu"> 
-	            <li><a href="/">Home</a><span>&gt;</span> </li> 
-	            <li><a href="@{Application.description()}">Learn</a><span>&gt;</span></li> 
-	            <li><a href="@{Application.db()}">Database</a><span>&gt;</span></li> 
-	            <li><a href="@{Application.contacts()}">Contacts</a><span>&gt;</span> </li> 
+	            <li class="#{if selected=='home'}selected#{/if}" ><a href="/">Home</a><span>&gt;</span> </li> 
+	            <li class="#{if selected=='description'}selected#{/if}"><a href="@{Application.description()}">Learn</a><span>&gt;</span></li> 
+	            <li class="#{if selected=='database'}selected#{/if}"><a href="@{Application.db()}">Database</a><span>&gt;</span></li> 
+	            <li class="#{if selected=='contacts'}selected#{/if}"><a href="@{Application.contacts()}">Contacts</a><span>&gt;</span> </li> 
 	        </ul> 
 	    </div>      
 	</div> 
@@ -43,7 +43,7 @@
 <div id="footer"> 
     <div class="wrapper"> 
         <p class="licence"> 
-		<img src="@{'/public/images/crg.png'}" height="18" width="18" alt="CRG logo" style="margin-bottom: -2px">The Leish Drug Database project is hosted by the <a href="http://www.crg.es" target="_blank">Centre for Genomic Regulation</a> (CRG) of Barcelona 
+		<img src="@{'/public/images/crg.png'}" height="18" width="18" alt="CRG logo" style="margin-bottom: -2px">The LeishProt Database project is hosted by the <a href="http://www.crg.es" target="_blank">Centre for Genomic Regulation</a> (CRG) of Barcelona 
         </p> 
     </div> 
 </div> 
