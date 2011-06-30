@@ -1,12 +1,5 @@
 @import url(reset.css);
 
-@font-face {
-  font-family: 'Aclonica';
-  font-style: normal;
-  font-weight: normal;
-  src: local('Aclonica'), local('Aclonica-Regular'), url('http://themes.googleusercontent.com/font?kit=VVH16EjBQLZ2NYB8eVnrO3YhjbSpvc47ee6xR_80Hnw') format('woff');
-}
-
 $footerHeight: 40px;
 $footerPadding: 8px;
 $pushHeight: $footerHeight + $footerPadding * 2 +1px;
@@ -24,11 +17,6 @@ html {
 }
 
 html, body {
-    color: #666;
-    font-family: 'Lucida Grande', Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    line-height: 1.5em !important;
-    text-shadow: #fff 1px 1px 0px; 
     height: 100%;
 }
 
@@ -43,7 +31,7 @@ html, body {
 	height: auto !important;
 	height: 100%;
 	margin: 0 auto  (-$pushHeight); /* the bottom margin is the negative value of the footer's height */
-    -webkit-box-sizing:content-box;
+    -webkit-box-sizing:content-box; 
     -moz-box-sizing:content-box;
     -ms-box-sizing:content-box;
     box-sizing:content-box;
@@ -77,25 +65,6 @@ a:hover {
 }
 
 
-
-#logo a {
-  font-family: 'Aclonica', serif;
-  font-size: 3.5em;
-  font-style: italic;
-  font-weight: 400;
-  text-shadow: 3px -1px 4px #111;
-  text-decoration: none;
-  text-transform: none;
-  letter-spacing: 0em;
-  line-height: 1.2;	
-  color: #f3f3f3;
-  position:relative;
-  top: 8px;	
-  word-spacing: 0em;
-}
-
-
-
 /** FOOTER **/
 
 #footer {
@@ -106,24 +75,26 @@ a:hover {
     background: -moz-linear-gradient(left bottom, #888787, #666);
     background: gradient(linear, left bottom, right top, from(#888787), to(#666));
     font-size: 12px;
+	letter-spacing: .085em;
+	word-spacing: .2em;
     color: #eee;
     -webkit-box-shadow: inset rgba(0,0,0,.1) 0 5px 5px;
     -moz-box-shadow: inset rgba(0,0,0,.1) 0 5px 5px;
+    -o-box-shadow: inset rgba(0,0,0,.1) 0 5px 5px;
     box-shadow: inset rgba(0,0,0,.1) 0 5px 5px;
     border-top: 1px solid rgba(0,0,0,.2);
     text-shadow: #555 -1px -1px 0px;
-    
     -webkit-box-sizing:content-box;
     -moz-box-sizing:content-box;
     -ms-box-sizing:content-box;
     box-sizing:content-box;
-    
 }
 
 #footer a {
     text-decoration: none;
     color: #ccc;
 }
+
 #footer a:hover {
     color: #fff;
 }
@@ -161,7 +132,6 @@ a:hover {
 }
 
 
-
 #footer hr {
     clear: both;
     border: none;
@@ -174,87 +144,13 @@ a:hover {
 
 #header {
     height: 70px;
-    background: #444;
-    background:  -webkit-gradient(linear, left top, left bottom, from(#555), to(#333));
-    background:  -moz-linear-gradient(top, #555, #333);
-    background:  gradient(linear, left top, left bottom, from(#555), to(#333));
+    background: #444 url(../images/back.png) repeat-x 0% 0%;
+    background: -webkit-gradient(linear, left top, left bottom, from(#555), to(#333));
+    background: -moz-linear-gradient(top, #555, #333);
+    background: gradient(linear, left top, left bottom, from(#555), to(#333));
 }
 
-
-#menu {
-    list-style: none;
-    position: absolute;
-    right: 0;
-    top: 12px;
-}
-
-#menu li {
-    float: left;
-    padding: 15px 15px;
-    position: relative;
-}
-
-#menu li:last-child {
-    padding-right: 0;
-}
-
-#menu span {
-    display: none;
-}
-
-#menu a {
-    color: #B3E862;
-    color: #999;
-    text-shadow: #000 -1px -1px 0px;
-    text-decoration: none;
-    font-size: 15px;
-}
-#menu a:hover {
-    color: #B3E862;
-    color: #ccc;
-}
-
-#menu .selected a {
-    color: #fff;
-}
-
-#menu .selected a:after {
-    content: " .";
-    display: block;
-    text-indent: -99em;
-    border-bottom: 0.8em solid #5C7DAC;
-    border-left: 0.8em solid transparent;
-    border-right: 0.8em solid transparent;
-    border-top: none;
-    height: 0px;
-    margin-left: -.8em;
-    margin-right: auto;
-    margin-top: 10px;
-    position: absolute;
-    left: 50%;
-    width: 1px;
-}
-
-/*
-#menu li a {
-	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5); 
-	-webkit-border-radius: 14px; 
-	-moz-border-radius: 14px; 
-	border-radius: 14px;
-	
-	-webkit-transition: all 0.3s ease-in-out;
-	-moz-transition: all 0.3s ease-in-out; 
-	-o-transition: all 0.3s ease-in-out; 
-	transition: all 0.3s ease-in-out;	
-	
-	padding: 6px 12px;
-}
-
-#menu li a:hover, 
-#menu li a:focus {
-	background: rgba(255, 255, 255, 0.15);
-} 
- */
+/** TOP **/ 
 
 #top {
     background: #8adc92;
@@ -290,6 +186,74 @@ a:hover {
     margin: 10px auto;
 }
 
+/** MENU **/
+
+#menu {
+    font-family: 'Lucida Grande', Helvetica, Arial, sans-serif;
+	list-style: none;
+    position: absolute;
+    right: 0;
+    top: 12px;
+}
+
+#menu li {
+    float: left;
+    padding: 15px 4px;
+    position: relative;
+}
+
+#menu li:last-child {
+    padding-right: 0;
+}
+
+#menu a {
+    color: #aaa;
+    text-shadow: #000 -1px -1px 0px;
+    text-decoration: none;
+    font-size: 15px;
+    padding: 6px 12px;
+}
+
+#menu .selected a {
+    color: #fff;
+    font-weight: bold;
+}
+
+#menu .selected a:after {
+    content: " .";
+    display: block;
+    text-indent: -99em;
+    border-bottom: 0.8em solid #5C7DAC;
+    border-left: 0.8em solid transparent;
+    border-right: 0.8em solid transparent;
+    border-top: none;
+    height: 0px;
+    margin-left: -.8em;
+    margin-right: auto;
+    margin-top: 10px;
+    position: absolute;
+    left: 50%;
+    width: 1px;
+}
+
+#menu li a {
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5); 
+	-webkit-border-radius: 16px; 
+	-moz-border-radius: 16px; 
+	-o-border-radius: 16px; 
+	border-radius: 16px;
+	
+	-webkit-transition: all 0.3s ease-in-out;
+	-moz-transition: all 0.3s ease-in-out; 
+	-o-transition: all 0.3s ease-in-out; 
+	transition: all 0.3s ease-in-out;	
+}
+
+#menu li a:hover, 
+#menu li a:focus {
+	color: #fff; 
+	background: rgba(255, 255, 255, 0.15);
+} 
 
 
 /** Form **/
@@ -325,137 +289,354 @@ a:hover {
     font-size: 13px;
 }
 
-/*
- * CSS button
- * see http://yayinternets.com/articles/emulating-google-style-buttons/
- */
- 
-.button {
-  -moz-border-radius:      3px;
-  -webkit-border-radius:   3px;
-  background:              white url('images/button.png') 0 0 repeat-x; /* Image fallback */
-  background:             -moz-linear-gradient(0% 170% 90deg, #c4c4c4, white);
-  background:             -webkit-gradient(linear, 0% 0%, 0% 170%, from(white), to(#c4c4c4));
-  border:                  1px solid;
-  border-color:            #e6e6e6 #cccccc #cccccc #e6e6e6;
-  border-radius:           3px;
-  color:                   #404040;
-  display:                 inline-block;
-  font-family:            "helvetica neue", helvetica, arial, freesans, "liberation sans", "numbus sans l", sans-serif;
-  font-size:               13px;
-  outline:                 0;
-  padding:                 5px 8px 5px;
-  text-align:              center;
-  text-decoration:         none;
-  text-shadow:             1px 1px 0 white; 
-  white-space:             nowrap; }
 
-  .button:hover {
-    background:           -moz-linear-gradient(0% 170% 90deg, #b8b8b8, white);
-    background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(white), to(#b8b8b8));
-    border-color:          #99ccff;
-    color:                 #333333; }
-
-
-  .button:active, .button:focus {
-    background-position:   0 -25px;
-    background:           -moz-linear-gradient(0% 170% 90deg, white, #dedede);
-    background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(#dedede), to(white));
-    border-color:          #8fc7ff #94c9ff #94c9ff #8fc7ff;
-    color:                 #1a1a1a;
-    text-shadow:           1px -1px 0 rgba(255, 255, 255, 0.5); } 
-    
-   .button.disabled {
-    background-position:   0 -25px;
-    background:           -moz-linear-gradient(0% 170% 90deg, white, #dedede);
-    background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(#dedede), to(white));
-    border-color:          #ccc #ccc #ccc #ccc;
-    color:                 #aaa;
-    text-shadow:           1px -1px 0 rgba(255, 255, 255, 0.5); } 
-
-
-
-/** Main style */
-
-#main
- {
-	font-family: 'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif;
-	color: #444;
-	font-size: 15px;
-	font-weight: normal;
-	line-height: 1.5;
-}
-
-#main b, #main strong {
-	color: #333;
-	font-weight: 400;
-}
-
-#main em {
-	font-style: normal;
-	font-weight: bold;
-}
 
 /*
- * Message boxs 
+ * Message boxes 
  * http://www.jankoatwarpspeed.com/post/2008/05/22/CSS-Message-Boxes-for-different-message-types.aspx
  */
  
 .box-info, .box-success, .box-warn, .box-error {
-border: 1px solid;
-margin: 10px 0px;
-padding:15px 10px 15px 50px;
-background-repeat: no-repeat;
-background-position: 10px 8px;
+	border: 1px solid;
+	margin: 10px 0px;
+	padding:15px 10px 15px 50px;
+	background-repeat: no-repeat;
+	background-position: 10px 8px;
 }
+
 .box-info {
-color: #00529B;
-background-color: #BDE5F8;
-background-image: url('images/box-info.png');
+	color: #00529B;
+	background-color: #BDE5F8;
+	background-image: url('../images/box-info.png');
 }
+
 .box-success {
-color: #4F8A10;
-background-color: #DFF2BF;
-background-image:url('images/box-success.png');
+	color: #4F8A10;
+	background-color: #DFF2BF;
+	background-image:url('../images/box-success.png');
 }
+
 .box-warn {
-color: #9F6000;
-background-color: #FEEFB3;
-background-image: url('images/box-warning.png');
+	color: #9F6000;
+	background-color: #FEEFB3;
+	background-image: url('../images/box-warning.png');
 }
+
 .box-error {
-color: #D8000C;
-background-color: #FFBABA;
-background-image: url('images/box-error.png');
+	color: #D8000C;
+	background-color: #FFBABA;
+	background-image: url('../images/box-error.png');
 }
 
-/** Wikistyle */
 
-.wikistyle h1,.wikistyle h2,.wikistyle h3,.wikistyle h4,.wikistyle h5,.wikistyle h6{border:0;text-shadow: #fff 1px 1px 0px;}
-.wikistyle h1{font-size:170%;border-bottom:4px solid #aaa;padding-top:.5em;margin-top:1.5em;}
-.wikistyle h1:first-child{margin-top:0;padding-top:.25em;border-top:none;}
-.wikistyle h2{font-size:150%;margin-top:1.5em;padding-top:.5em;}
-.wikistyle h3{margin-top:1em;}
-.wikistyle p{margin:1em 0;line-height:1.5em;}
-.wikistyle ul{margin:1em 0 1em 2em; list-style: square; line-height: 24px;}
-.wikistyle ol{margin:1em 0 1em 2em; list-style-position: outside; list-style-type: decimal; line-height: 24px;}
-.wikistyle ul ul,.wikistyle ul ol,.wikistyle ol ol,.wikistyle ol ul{margin-top:0;margin-bottom:0;}
-.wikistyle blockquote{margin:1em 0;border-left:5px solid #ddd;padding-left:.6em;color:#666;}
-.wikistyle dt{font-weight:bold;margin-left:1em;}
-.wikistyle dd{margin-left:2em;margin-bottom:1em;}
-.wikistyle pre{margin:1em 0;font-size:90%;background-color:#f8f8ff;border-left:4px solid #e0e0e0;padding:.5em;line-height:1.5em;color:#444;overflow:auto;}
-.wikistyle pre code{display:block;padding:0;padding-left:10px;font-size:100%;background-color:#f8f8ff;border:none;}
-.wikistyle code{font-size:90%;background-color:#f8f8ff;color:#444;padding:0 .2em;border:1px solid #dedede;}
-.wikistyle pre.console{margin:1em 0;font-size:90%;background-color:black;padding:.5em;line-height:1.5em;color:white;}
-.wikistyle pre.console code{padding:0;font-size:100%;background-color:black;border:none;color:white;}
-.wikistyle pre.console span{color:#888;}
-.wikistyle pre.console span.command{color:yellow;}
-.wikistyle h1:after, .wikistyle h2:after, .wikistyle h3:after {content: '';}
-.wikistyle a{color: #444;}
-.wikistyle p.note {background:#FFF9D8; padding: 10px;color:#333;border-left:6px solid #F3E378;}
+/*	=================================== BUTTONS ===============================
+	AUTHOR: 		David Hund - http://valuedstandards.com
+	License: 		DoWhatEverYouWantButBeNice™
+	Description: 	Various CSS button styles. Semi-crossbrowser.
 
-table.wikistyle  {margin:1em 0;width:650px;}
-table.wikistyle  th{border-bottom:1px solid #bbb;padding:.2em 1em;}
-table.wikistyle td{border-bottom:1px solid #ddd;padding:.2em 1em;}
-table.wikistyle td:first-child{padding-left:0;}
-table.wikistyle td:last-child{padding-right:0;}
+	Note: 			- Uses inline(!) IE hacks for maintainability etc.
+					- Uses data-uri's for browsers not supporting CSS gradients
+					- Please don't just copy. Use what you need and cleanup!
+
+	Reference:		http://valuedstandards.com/static/test/buttons/
+*/
+
+.button, ul.button-bar li a {
+	/* 	(X-browser-) inline-block */
+	position: relative; /* Google Thinks So: http://vlst.nl/x/3u */
+	display: -moz-inline-stack;  /* Fx: TODO: also test -moz-inline-box?! */
+	display: inline-block; /* Proper */
+	*zoom: 1; /* IE 6-7 */
+	*display: inline; /* IE 6-7 */
+
+	/*	Padding/Margins */
+	padding: .5em 1em;
+	margin: 0 .5em;
+
+	/*	Generic Font Styles */
+	/* outline: none; */ /* Here be dragons! */
+	font: normal 14px/100% Arial, Helvetica, sans-serif;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+	vertical-align: middle; /* from: http://vlst.nl/x/3v */
+	*vertical-align: auto; /* from: http://vlst.nl/x/3v */
+
+	/*	Text-Shadow */
+	text-shadow: 0 1px 1px rgba(0,0,0,.4); /* Outset */
+	text-shadow: 0 1px 0 rgba(255,255,255,.6); /* Inset */
+
+	/*	Border Radius */
+	-webkit-border-radius: .3em;
+	-moz-border-radius: .3em;
+	-o-border-radius: .3em; /* Opera removed support but it might work in older (pre 10.5) versions? */
+	border-radius: .3em;
+
+	/*	Box Shadow */
+	-webkit-box-shadow: 0 0 3px rgba(0,0,0,.5);
+	-moz-box-shadow: 0 0 3px rgba(0,0,0,.5);
+	box-shadow: 0 0 3px rgba(0,0,0,.5);
+	/* We could simulate this in IE with ('glow') filters, but we will not... */
+
+	/*	DEFAULT Color: Grey */
+	color: #333;
+	border: solid 1px #999;
+	background: #EEE; /* Basic fallback */
+	/* Fx < 3.6 & other browsers supporting data uri's */
+	background: url("data:image/jpeg,%FF%D8%FF%E0%00%10JFIF%00%01%01%00%00%01%00%01%00%00%FF%DB%00C%00%08%06%06%07%06%05%08%07%07%07%09%09%08%0A%0C%14%0D%0C%0B%0B%0C%19%12%13%0F%14%1D%1A%1F%1E%1D%1A%1C%1C%20%24.'%20%22%2C%23%1C%1C(7)%2C01444%1F'9%3D82%3C.342%FF%DB%00C%01%09%09%09%0C%0B%0C%18%0D%0D%182!%1C!22222222222222222222222222222222222222222222222222%FF%C0%00%11%08%002%00%01%03%01%22%00%02%11%01%03%11%01%FF%C4%00%17%00%01%01%01%01%00%00%00%00%00%00%00%00%00%00%00%00%00%03%02%07%FF%C4%00%15%10%01%01%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%12%FF%C4%00%14%01%01%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%FF%C4%00%14%11%01%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%FF%DA%00%0C%03%01%00%02%11%03%11%00%3F%00%EF%B4%23%40%25B4%02T%23%400%00%3F%FF%D9") repeat-x 0 0;
+	/* Webkit/Safari */
+	background: -webkit-gradient(linear, left top, left bottom, from(#FFF), to(#DDD));
+	/* Fx 3.6+ */
+	background: -moz-linear-gradient(top,  #FFF,  #DDD);
+	/* We could have this in IE with ('gradient') filters, but we will not... */
+}
+
+/* Ugly hack: but Fx needs this to have INPUT elements the same height as A elements (?) */
+button, input.button, ul.button-bar li a,  x:-moz-any-link { padding: .35em 1em; }
+
+/* 	Hover / Active styles/colors */
+button:hover,
+button:active,
+.button:hover,
+.button:active,
+.button.active,
+ul.button-bar li a:hover,
+ul.button-bar li a:active {
+	/* Default: Grey */
+	border-color: #666;
+	background: #FFF;
+	/* Configure OTHER image URiS for Fx < 3.6 & other browsers supporting data uri's */
+/* 	background: url("data:image/jpeg,%FF%D8%FF%E0%00%10JFIF%00%01%01%00%00%01%00%01%00%00%FF%DB%00C%00%08%06%06%07%06%05%08%07%07%07%09%09%08%0A%0C%14%0D%0C%0B%0B%0C%19%12%13%0F%14%1D%1A%1F%1E%1D%1A%1C%1C%20%24.'%20%22%2C%23%1C%1C(7)%2C01444%1F'9%3D82%3C.342%FF%DB%00C%01%09%09%09%0C%0B%0C%18%0D%0D%182!%1C!22222222222222222222222222222222222222222222222222%FF%C0%00%11%08%002%00%01%03%01%22%00%02%11%01%03%11%01%FF%C4%00%17%00%01%01%01%01%00%00%00%00%00%00%00%00%00%00%00%00%00%03%02%07%FF%C4%00%15%10%01%01%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%12%FF%C4%00%14%01%01%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%FF%C4%00%14%11%01%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%FF%DA%00%0C%03%01%00%02%11%03%11%00%3F%00%EF%B4%23%40%25B4%02T%23%400%00%3F%FF%D9") repeat-x 0 0; */
+	background: -webkit-gradient(linear, left top, left bottom, from(#DDD), to(#FFF));
+	background: -moz-linear-gradient(top,  #DDD,  #FFF);
+	text-shadow: none;
+}
+button:active, .button:active, ul.button-bar li a:active { top: 1px; /* Popup the button a bit */ }
+
+/*	ALT Color: orange */
+.orange, .green, .blue { color: #FFF; text-shadow: 0 1px 1px rgba(0,0,0,.4); }
+
+.orange {
+	border-color: #da7c0c;
+	background: #f78d1d;
+	background: -webkit-gradient(linear, left top, left bottom, from(#faa51a), to(#f47a20));
+	background: -moz-linear-gradient(top,  #faa51a,  #f47a20);
+}
+.orange:hover, .orange:active, .orange.active {
+	border-color: #da7c0c;
+	background: #f47a20;
+	background: -webkit-gradient(linear, left top, left bottom, from(#f47a20), to(#faa51a));
+	background: -moz-linear-gradient(top,  #f47a20,  #faa51a);
+}
+/*	ALT Color: green */
+.green {
+	border-color: #6C8F00;
+	background: #90BF00;
+	background: -webkit-gradient(linear, left top, left bottom, from(#90BF00), to(#789F00));
+	background: -moz-linear-gradient(top,  #90BF00,  #789F00);
+}
+.green:active, .green:hover, .green.active {
+	border-color: #6C8F00;
+	background: #789F00;
+	background: -webkit-gradient(linear, left top, left bottom, from(#789F00), to(#90BF00));
+	background: -moz-linear-gradient(top,  #789F00,  #90BF00);
+}
+/*	ALT Color: blue */
+.blue {
+	border-color: #0069BF;
+	background: #0084EF;
+	background: -webkit-gradient(linear, left top, left bottom, from(#0084EF), to(#0072CF));
+	background: -moz-linear-gradient(top,  #0084EF,  #0072CF);
+}
+.blue:active, .blue:hover, .blue.active {
+	border-color: #0069BF;
+	background: #0072CF;
+	background: -webkit-gradient(linear, left top, left bottom, from(#0072CF), to(#0084EF));
+	background: -moz-linear-gradient(top,  #0072CF,  #0084EF);
+}
+
+/* Fun with Generated Content and Unicode :) */
+/* Only seems to work on A elements though... */
+.fun:after { content: "⎋"; } /* etc. */
+.fun2:after { content: "➔"; }
+.fun3:after { content: "▼"; }
+.fun::after { margin-left: 1em; padding-left: 1em ;border-left: 1px solid #666; }
+
+/* ALT FORMS */
+.inset { 
+	-webkit-box-shadow: inset 0 0 3px rgba(0,0,0,.5);
+	-moz-box-shadow: inset 0 0 3px rgba(0,0,0,.5); 
+	box-shadow: inset 0 0 3px rgba(0,0,0,.5);
+}
+
+.rounded { -webkit-border-radius: 1em; -moz-border-radius: 1em; border-radius: 1em; }
+.square, .bullet { -webkit-border-radius: 0; -moz-border-radius: 0; border-radius: 0; }
+.bullet { -webkit-border-top-right-radius: 1em; -webkit-border-bottom-right-radius: 1em; -moz-border-radius-topright: 1em; -moz-border-radius-bottomright: 1em; border-top-right-radius: 1em; border-bottom-right-radius: 1em; }
+.large { font-size: 1.2em; }
+.small { font-size: .7em; padding: .4em .8em; -webkit-border-radius: 2px 2px; -moz-border-radius: 2px 2px; border-radius: 2px 2px; }
+
+.combined, ul.button-bar li a { 
+	margin: 0; 
+	-webkit-border-radius: 0; 
+	-moz-border-radius: 0; 
+	border-radius: 0; 
+	border-width: 1px 0; 
+}
+.combined.first,
+.combined:first-child,
+ul.button-bar li:first-child a { 
+	padding-left: 1.5em; 
+	-webkit-border-top-left-radius: 1em; 
+	-webkit-border-bottom-left-radius: 1em; 
+	-moz-border-radius-topleft: 1em; 
+	-moz-border-radius-bottomleft: 1em; 
+	border-top-left-radius: 1em; 
+	border-bottom-left-radius: 1em; 
+}
+.combined.last,
+.combined:last-child,
+ul.button-bar li:last-child a { 
+	padding-right: 1.5em; 
+	-webkit-border-top-right-radius: 1em; 
+	-webkit-border-bottom-right-radius: 1em; 
+	-moz-border-radius-topright: 1em; 
+	-moz-border-radius-bottomright: 1em; 
+	border-top-right-radius: 1em; 
+	border-bottom-right-radius: 1em; 
+}
+.combined:hover, .combined:active { border-color: #999; }
+.combined.square { -webkit-border-radius: 0; -moz-border-radius: 0; border-radius: 0; }
+
+/* Combined buttons in a bar, in a list. Better semantics and accessibility */
+ul.button-bar { list-style-type: none; margin: 0; padding: 0; }
+ul.button-bar li { display: inline; margin: 0; padding: 0; }
+ul.button-bar li a { /* Same as .button! */}
+
+/* .round with extra span :-( */
+.round {
+	-webkit-border-radius: 1em; 
+	-moz-border-radius: 1em; 
+	border-radius: 1em;
+	padding: .5em;
+	overflow: hidden;
+}
+.round span { position: absolute; left: -999em; /* Hide tekst */ }
+.eject:before { content: "✿"; } /* etc. .eject should be appropriate to the icon obviously */
+.ok:before { content: "✔"; }
+.delete:before { content: "✖"; }
+.go-left:before { content: "←"; } 
+.go-right:before { content: "→"; }
+
+/* .round2 without! extra span :-) */
+.round2 {
+	-webkit-border-radius: 1em; 
+	-moz-border-radius: 1em; 
+	border-radius: 1em;
+	padding: .5em .6em; /* Webkit */
+	text-indent: -999em;
+	overflow: hidden;
+}
+/* Ugly hack: but Fx needs this */
+.round2,  x:-moz-any-link { padding: .5em 1em; }
+.round2:after { content: "✔"; float: left; text-indent: 0; }
+/* Ugly hack: but Fx needs this */
+.round2:after,  x:-moz-any-link { margin-left:  -.35em; }
+
+/*	=================================== / BUTTONS =============================== */
+
+/** Main style **/
+
+body {
+	font-family: 'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif;
+} 
+
+#main
+ {
+	font-family: 'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif;
+	font-size: 15px;
+	font-weight: normal;
+	text-shadow: #fff 1px 1px 0px; 
+	color: #444;
+	line-height: 1.5;
+}
+
+#logo {
+	position: relative;
+	left: -10px;
+	background: url(../images/logo.png) no-repeat 0% 0%;
+	float: left;
+	font-size: 1px;
+	text-indent: -9999px;
+	width: 300px;
+	height: 67px;
+}
+
+
+#logo a {  
+    display: block;
+    height: 70px;
+    width: 300px;
+} 
+
+/* Pure CSS logo 
+ 
+@font-face {
+  font-family: 'Aclonica';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Aclonica'), local('Aclonica-Regular'), url('http://themes.googleusercontent.com/font?kit=VVH16EjBQLZ2NYB8eVnrO3YhjbSpvc47ee6xR_80Hnw') format('woff');
+}
+ 
+ 
+#logo a {
+  font-family: 'Aclonica', serif;
+  font-size: 3.5em;
+  font-style: italic;
+  font-weight: 400;
+  text-shadow: 3px -1px 4px #111;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0em;
+  line-height: 1.2;	
+  color: #f3f3f3;
+  position:relative;
+  top: 8px;	
+  word-spacing: 0em;
+} */
+
+
+
+/** c-style */
+
+.c-style h1,.c-style h2,.c-style h3,.c-style h4,.c-style h5,.c-style h6 {border:0;text-shadow: #dedede 1px 1px 0px;}
+.c-style h1 {font-size:2.5em; margin-bottom: .3em; }
+.c-style h1 span { border-bottom: 2px solid #aaa;  }
+/*.c-style h1:first-child{margin-top:0;padding-top:.25em;border-top:none;} */
+
+.c-style h2{font-size:150%;margin-top:1.5em;padding-top:.5em;}
+.c-style h3{margin-top:1em;}
+.c-style p{margin:0 0 1em;line-height:1.5em;}
+.c-style ul{margin:1em 0 1em 2em; list-style: square; line-height: 24px;}
+.c-style ol{margin:1em 0 1em 2em; list-style-position: outside; list-style-type: decimal; line-height: 24px;}
+.c-style ul ul,.c-style ul ol,.c-style ol ol,.c-style ol ul{margin-top:0;margin-bottom:0;}
+.c-style blockquote{margin:1em 0;border-left:5px solid #ddd;padding-left:.6em;color:#666;}
+.c-style dt{font-weight:bold;margin-left:1em;}
+.c-style dd{margin-left:2em;margin-bottom:1em;}
+.c-style pre{margin:1em 0;font-size:90%;background-color:#f8f8ff;border-left:4px solid #e0e0e0;padding:.5em;line-height:1.5em;color:#444;overflow:auto;}
+.c-style pre code{display:block;padding:0;padding-left:10px;font-size:100%;background-color:#f8f8ff;border:none;}
+.c-style code{font-size:90%;background-color:#f8f8ff;color:#444;padding:0 .2em;border:1px solid #dedede;}
+.c-style pre.console{margin:1em 0;font-size:90%;background-color:black;padding:.5em;line-height:1.5em;color:white;}
+.c-style pre.console code{padding:0;font-size:100%;background-color:black;border:none;color:white;}
+.c-style pre.console span{color:#888;}
+.c-style pre.console span.command{color:yellow;}
+.c-style h1:after, .c-style h2:after, .c-style h3:after {content: '';}
+.c-style a{color: #444;}
+.c-style p.note {background:#FFF9D8; padding: 10px;color:#333;border-left:6px solid #F3E378;}
+
+table.c-style  {margin:1em 0;width:650px;}
+table.c-style  th { border-top:2px solid #bbb; border-bottom:2px solid #bbb; padding:.5em 1em; white-space: nowrap; }
+table.c-style td { padding:.3em 1.5em .3em 1em; }
+table.c-style td:first-child{ padding-left:0; }
+table.c-style tbody tr { border-bottom:1px solid #ddd; }
+table.c-style tbody tr:hover { background-color: #efefef }
+table.c-style tbody tr:last-child { border-bottom: 2px solid #bbb; }

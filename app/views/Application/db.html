@@ -18,17 +18,22 @@
 	margin: 1em;
 } 
 
-#omni-search input {
-	width: 750px;
+#omni-search input[type='text'] {
+	width: 700px;
 	font-size:	18px;
 	font-weight: 400;
     border: 1px solid #CFCFCF;
     padding: 8px;
-	margin-right: 10px;
+	position: relative;
+	top: 3px;
     box-sizing:content-box;
     -webkit-box-sizing:content-box;
     -moz-box-sizing:content-box;
     -ms-box-sizing:content-box;
+}
+
+#omni-search button.button {
+	font-size: 1.1em;
 }
 
 #omni-search input:focus, 
@@ -73,7 +78,7 @@
 <h1>Browse the database</h1>
 
 <div id="omni-search">
-<input id="omni" type="text" > <button id="omni-button" class="button">Search</button>
+<input id="omni" type="text" > <button id="omni-button" class="button blue">Search</button>
 <div class="hint">
 Refine your search entering the keywords on which you are interested. 
 Separate multiple keywords using the comma character. 

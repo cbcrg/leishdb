@@ -9,10 +9,12 @@
 	#{/elseif}
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	#{get 'preStyles' /}
+	<meta http-equiv="Content-Style-Type" content="text/css">
+	<meta name="application-name" content="LeishProt">
+	<link rel="shortcut icon" type="image/x-icon" href="@{'/public/images/favicon.ico'}"> 
 	<link rel="stylesheet" type="text/css" media="screen" href="@{'/public/css/main.scss'}">
 	#{get 'moreStyles' /}
-	<link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
+
 	<script src="@{'/public/javascripts/jquery-1.4.2.min.js'}" type="text/javascript" charset="utf-8"></script>
 	#{get 'moreScripts' /}
 </head>
@@ -23,17 +25,17 @@
 	    <div class="wrapper">   
 	        <h1 id="logo"><a href="/">LeishProt</a></h1> 
 	        <ul id="menu"> 
-	            <li class="#{if selected=='home'}selected#{/if}" ><a href="/">Home</a><span>&gt;</span> </li> 
-	            <li class="#{if selected=='description'}selected#{/if}"><a href="@{Application.description()}">Learn</a><span>&gt;</span></li> 
-	            <li class="#{if selected=='database'}selected#{/if}"><a href="@{Application.db()}">Database</a><span>&gt;</span></li> 
-	            <li class="#{if selected=='contacts'}selected#{/if}"><a href="@{Application.contacts()}">Contacts</a><span>&gt;</span> </li> 
+	            <li class="#{if selected=='home'}selected#{/if}" ><a href="/">Home</a> </li> 
+	            <li class="#{if selected=='description'}selected#{/if}"><a href="@{Application.description()}">Learn</a> </li> 
+	            <li class="#{if selected=='database'}selected#{/if}"><a href="@{Application.db()}">Database</a> </li> 
+	            <li class="#{if selected=='contacts'}selected#{/if}"><a href="@{Application.contacts()}">Contacts</a>  </li> 
 	        </ul> 
 	    </div>      
 	</div> 
 	<div id="top">
 	</div> 
 	<div class="content wrapper"> 
-		<div class="wikistyle"> 
+		<div class="c-style"> 
 		#{doLayout /}
 		</div> 
 	</div> 
