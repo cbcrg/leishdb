@@ -15,11 +15,8 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.playframework.playclipse.playNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>conf/guice-1.2</name>
-			<type>2</type>
-			<location>/Users/ptommaso/workspace/leishdb/modules/guice-1.2/conf</location>
-		</link>
-	</linkedResources>
+	<linkedResources><link><name>guice-1.2</name><type>2</type><location>/Users/ptommaso/workspace/leishdb/modules/guice-1.2/app</location></link>
+<link><name>conf/guice-1.2</name><type>2</type><location>/Users/ptommaso/workspace/leishdb/modules/guice-1.2/conf</location></link>
+<link><name>sass-1.0</name><type>2</type><location>/Users/ptommaso/workspace/leishdb/modules/sass-1.0/app</location></link>
+</linkedResources>
 </projectDescription>
